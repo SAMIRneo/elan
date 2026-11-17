@@ -782,32 +782,49 @@ function sportPicker(){openSheet(`<h3 style="margin-top:2px">Quoi aujourd'hui ?<
 
 function openActForm(sid){if(sid==="other")return sportPicker();
   const s=sportOf(sid);tmpSets=[];tmpEx=[];let sd=today();
-  if(s.kind==="series"){openSheet(`<h3>${s.e} ${esc(s.n)}</h3>
-    <label class="lbl">Date</label><input type="date" id="acD" value="${sd}">
-    <div class="kpi" style="margin-top:4px">
-      <div class="grow"><label class="lbl">Exercice</label><input id="acM" list="mL" placeholder="Presse à cuisses"><datalist id="mL">${machineList().map(m=>`<option>${esc(m)}</option>`).join("")}</datalist></div>
-      <div style="width:88px"><label class="lbl">kg</label><input id="acW" type="number" min="0" step="0.5" inputmode="decimal" placeholder="50"></div>
-      <div style="width:76px"><label class="lbl">rép.</label><input id="acR" type="number" min="1" step="1" inputmode="numeric" placeholder="10"></div>
-    </div>
-    <button class="btn" id="acAdd" style="margin-top:10px">＋ Ajouter la série</button>
-    <div id="acL"></div>
-    <div class="row" style="margin-top:14px"><button class="btn alt" id="acC">Annuler</button><button class="btn" id="acOk">Terminer la séance</button></div>`);
-    const list=()=>{$("acL").innerHTML=tmpSets.length?tmpSets.map((x,i)=>`<div class="act"><small class="grow"><b>${esc(x.m)}</b> · ${fn(x.w)} kg × ${x.r}</small><button class="del" data-i="${i}" aria-label="Supprimer la série">✕</button></div>`).join(""):`<p class="hint" style="margin-top:8px">Aucune série pour l'instant — ajoute ta 1ʳᵉ série 💪</p>`};
-    $("acAdd").onclick=()=>{const m=$("acM").value.trim(),w=parseFloat($("acW").value),r=parseInt($("acR").value,10);
-      if(!m){toast("⚠️ Indique l'exercice");return}if(!(w>0)||!(r>0)){toast("⚠️ Indique kg et répétitions");return}
-      const old=(S.sets.filter(x=>x.m===m).reduce((a,x)=>Math.max(a,x.w),0));
-      tmpSets.push({m,w,r,d:$("acD").value||today()});list();
-      $("acM").value="";$("acW").value="";$("acR").value="";$("acM").focus();
-      if(w>old)toast("💪 Record sur "+m+" : "+fn(w)+" kg !",true)};
-    $("acL").addEventListener("click",e=>{const b=e.target.closest("[data-i]");if(!b)return;tmpSets.splice(+b.dataset.i,1);list()});
+  if(s.kind==="series"){
+    const exos=[];
+    EX_CATS.forEach(([cat])=>exListFor(sid,cat).forEach(x=>{if(!exos.some(y=>y.id===x.id))exos.push(Object.assign({},x,{cat:cat}))}));
+    const rows=exos.map(x=>{
+      const prev=(S.exlogs||[]).filter(e=>e.sport===sid&&e.ex===x.id).slice(-1)[0];
+      return `<div class="row" style="padding:7px 0;border-top:1px solid var(--soft);gap:5px">
+        <div class="grow"><b style="font-size:14px">${x.e} ${esc(x.n)}</b>${prev?`<small class="hint" style="display:block">record ${fn(prev.kg||0)} kg</small>`:""}</div>
+        <input type="number" min="0" step="0.5" inputmode="decimal" data-sk="${esc(x.id)}" placeholder="kg" style="width:74px" aria-label="kg ${esc(x.n)}">
+        <input type="number" min="0" inputmode="numeric" data-sr="${esc(x.id)}" placeholder="rép" style="width:64px" aria-label="rép ${esc(x.n)}">
+        <input type="number" min="0" inputmode="numeric" data-ss="${esc(x.id)}" value="3" style="width:58px" aria-label="séries ${esc(x.n)}">
+      </div>`}).join("");
+    openSheet(`<h3>${s.e} ${esc(s.n)}</h3>
+      <label class="lbl">Date</label><input type="date" id="acD" value="${sd}">
+      <p class="hint" style="margin:8px 0 0">Renseigne kg / rép / séries pour chaque exercice fait. Les lignes vides sont ignorées.</p>
+      <div style="margin-top:8px">${rows||`<p class="empty">Aucun exercice — crée-en un dans l'onglet Exos.</p>`}</div>
+      <div class="row" style="margin-top:14px"><button class="btn alt" id="acC">Annuler</button><button class="btn" id="acOk">Terminer la séance</button></div>`);
     $("acC").onclick=closeSheet;
-    $("acOk").onclick=()=>{if(!tmpSets.length){toast("⚠️ Ajoute au moins une série");return}
-      const d=tmpSets[0].d,a={id:uid(),d,s:"muscu",met:{n:tmpSets.length},t:Date.now()};
-      let pr=false;tmpSets.forEach(x=>{const best=S.sets.filter(y=>y.m===x.m).reduce((a,y)=>Math.max(a,y.w),0);if(x.w>best)pr=true;S.sets.push({id:uid(),a:a.id,d,m:x.m,w:x.w,r:x.r});S.exlogs=(S.exlogs||[]);S.exlogs.push({id:uid(),d,sport:"muscu",ex:"m:"+x.m,cat:"main",e:"🏋️",n:x.m,kg:x.w,reps:x.r,sets:1,sec:0,km:0,note:"",v:null,t:Date.now()})});
-      S.acts.push(a);if(pr)S.prEver=true;ensureSport("muscu");save();closeSheet();renderAll();checkBadges();
-      toast(pr?"💪 Séance enregistrée — nouveau record au passage !":"✅ Séance enregistrée : "+tmpSets.length+" séries",pr);
-      rateSheet(a);return}
-    list();return}
+    $("acOk").onclick=()=>{
+      const d=$("acD").value||today(),vals={},lines=[];
+      document.querySelectorAll("[data-sk],[data-sr],[data-ss]").forEach(i=>{
+        const id=i.dataset.sk||i.dataset.sr||i.dataset.ss;
+        vals[id]=vals[id]||{};
+        if(i.dataset.sk)vals[id].kg=parseFloat(i.value)||0;
+        if(i.dataset.sr)vals[id].reps=parseInt(i.value,10)||0;
+        if(i.dataset.ss)vals[id].sets=parseInt(i.value,10)||3;
+      });
+      exos.forEach(x=>{const v=vals[x.id]||{};if((v.kg||0)>0&&(v.reps||0)>0)lines.push({x:x,kg:v.kg,reps:v.reps,sets:v.sets||3})});
+      if(!lines.length){toast("⚠️ Indique au moins un exercice (kg et rép)");return}
+      const a={id:uid(),d:d,s:sid,met:{n:lines.reduce((t,l)=>t+l.sets,0)},t:Date.now()};
+      let pr=false;
+      lines.forEach(l=>{
+        const best=(S.sets||[]).filter(y=>y.m===l.x.n).reduce((m,y)=>Math.max(m,y.w||0),0);
+        if(l.kg>best)pr=true;
+        for(let k=0;k<l.sets;k++)S.sets.push({id:uid(),a:a.id,d:d,m:l.x.n,w:l.kg,r:l.reps,t:Date.now()});
+        S.exlogs=S.exlogs||[];
+        S.exlogs.push({id:uid(),d:d,sport:sid,ex:l.x.id,cat:l.x.cat,e:l.x.e,n:l.x.n,kg:l.kg,reps:l.reps,sets:l.sets,sec:0,km:0,note:"",v:null,t:Date.now()});
+      });
+      S.acts.push(a);if(pr)S.prEver=true;ensureSport(sid);save();closeSheet();renderAll();checkBadges();
+      toast(pr?"💪 Séance enregistrée — nouveau record !":"✅ Séance enregistrée : "+lines.length+" exercices",pr);
+      rateSheet(a);
+    };
+    return}
+
   openSheet(`<h3>${s.e} ${esc(s.n)}</h3>
     <label class="lbl">Date</label><input type="date" id="acD" value="${sd}">
     <div class="kpi" style="margin-top:4px">
@@ -835,7 +852,11 @@ function openActForm(sid){if(sid==="other")return sportPicker();
     if(!(min>0)&&km>0)min=Math.round(km*(s.id==="velo"?15:s.id==="course"?6:s.id==="rando"?15:2.5));
     if(!(min>0)&&exMin>0)min=exMin;
     const a={id:uid(),d:$("acD").value||today(),s:s.id,met:{min,km:km||0,ex:tmpEx.length?tmpEx.map(x=>({n:x.n,min:x.min||0})):undefined,note:$("acN").value.trim()||undefined},t:Date.now()};
-    S.acts.push(a);ensureSport(s.id);save();closeSheet();renderAll();checkBadges();
+    S.acts.push(a);S.exlogs=S.exlogs||[];
+    EX_CATS.forEach(function(pair){exListFor(s.id,pair[0]).forEach(function(x){
+      S.exlogs.push({id:uid(),d:a.d,sport:s.id,ex:x.id,cat:pair[0],e:x.e,n:x.n,kg:0,reps:0,sets:0,sec:min*60,km:km||0,note:a.met.note||"",v:speedOf(km||0,min*60),t:Date.now()})
+    })});
+    ensureSport(s.id);save();closeSheet();renderAll();checkBadges();
     toast("✅ "+esc(s.n)+" enregistré — "+kcalOf(a)+" kcal");rateSheet(a);return}
   exList()}
 let tmpEx=[];
