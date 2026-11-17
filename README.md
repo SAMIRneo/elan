@@ -27,7 +27,7 @@ Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** r�
 1. Tout dans `index.html` — pas de fichiers CSS/JS séparés, zéro dépendance
 2. Zéro backend, données en localStorage (`el-v1:<compte>`), comptes dans `sg-accounts`
 3. Toute nouvelle couleur a sa déclinaison light **et** dark dans les blocs de tokens
-4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v23`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
+4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v24`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
 5. Cibles tactiles ≥ 44 px
 6. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"` (géré dans `renderAll` + handler `pOk`)
 

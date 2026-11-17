@@ -333,7 +333,7 @@ function weeksAtLeast(id,per,n){const m=dn(monday());
     if(c<per)return false}
   return true}
 function sportCharge(id){const acts=(S.acts||[]).filter(a=>a.s===id),kind=(sportOf(id).kind||"dur");
-  if(kind==="series")return (S.sets||[]).filter(x=>S.acts.some(a=>a.id===x.a&&a.s===id)).reduce((s,x)=>s+(x.w||0),0);
+  if(kind==="series")return (S.exlogs||[]).filter(x=>x.sport===id).reduce((s,x)=>s+(x.kg||0),0);
   if(kind==="dist")return acts.reduce((s,a)=>s+(a.met.km||0),0);
   return acts.reduce((s,a)=>s+(a.met.min||0),0)}
 function sportCatCount(id){return sportBadgeDefs(id).filter(b=>b.cat!=="rang"&&b.earned).length}
@@ -1313,7 +1313,7 @@ function openExLog(sport,exId,cat){
     S.exlogs=S.exlogs||[];
     S.exlogs.push({id:uid(),d:today(),sport,ex:exId,cat,e:def.e,n:def.n,kg,reps,sets:sets||1,sec,km,note,v,t:Date.now()});
     const min=sec?Math.max(1,Math.round(sec/60)):1;
-    S.acts.push({id:uid(),d:today(),s:sport,met:{min,ex:[{n:def.n,min:sec?Math.round(sec/60):0}],note:note||undefined},t:Date.now()});
+    S.acts.push({id:uid(),d:today(),s:sport,met:{min,km:km||0,ex:[{n:def.n,min:sec?Math.round(sec/60):0}],note:note||undefined},t:Date.now()});
     ensureSport(sport);save();closeSheet();renderExos();checkBadges();
     toast("✅ Mesure enregistrée — visible dans Progrès")};
 }
