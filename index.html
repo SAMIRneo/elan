@@ -259,6 +259,8 @@ function loadS(){S=Object.assign(fresh(),J("el-v1:"+NAME,true)||{});S.goals=Obje
   S.fav=(S.fav||[]).filter(x=>typeof x==="string"&&sportOf(x));
   S.acts=(S.acts||[]).filter(a=>a&&a.id&&sportOf(a.s));
   S.dishes=S.dishes||{};S.lvl=S.lvl||{};S.mood=S.mood||{};S.chal=S.chal||{};S.spchal=S.spchal||{};S.wlog=S.wlog||[];S.bx=S.bx||[];S.rest=S.rest||{};S.exlogs=S.exlogs||[];S.customEx=S.customEx||{};if(!S.exoV2){S.sets=[];S.exoV2=true;save()}
+  if(!S.exMapV1){const map={};Object.keys(EXOS).forEach(function(sp){EX_CATS.forEach(function(pair){EXOS[sp][pair[0]].forEach(function(x){map[exNorm(x.n)]={id:x.id,sport:sp,cat:pair[0]}})})});
+    (S.exlogs||[]).forEach(function(x){if(x.ex&&x.ex.indexOf("m:")===0){const hit=map[exNorm(x.n)];if(hit){x.ex=hit.id;x.sport=hit.sport;x.cat=hit.cat}}});S.exMapV1=true;save()}
   if(!S.badgeV2){S.badges=[];S.pantheon=[];S.pantheonComplete=false;S.lvl={};S.badgeV2=true;save()}}
 /* Migration depuis l'ancienne app "Suivi salle" */
 function migrate(){const O=J("suivi-salle-v1:"+NAME,true);if(!O)return;
@@ -1122,13 +1124,23 @@ const EXOS={
  muscu:{warmup:[
   {id:"mu-w1",e:"🏃",n:"Trot léger",d:"3-5 min de course ou vélo pour monter la température corporelle. Respiration fluide, pas d'effort.",reps:"3-5 min"},
   {id:"mu-w2",e:"🔄",n:"Rotations articulaires",d:"Poignets, coudes, épaules, hanches, genoux, chevilles — 10 rotations dans chaque sens.",reps:"10×"},
-  {id:"mu-w3",e:"🦵",n:"Squats à vide",d:"15-20 répétitions sans charge pour réveiller les jambes et le bassin.",reps:"2×15"}],
+  {id:"mu-w3",e:"🦵",n:"Squats au poids du corps",d:"15-20 répétitions sans charge pour réveiller les jambes et le bassin.",reps:"2×15"}],
   main:[
   {id:"mu-m1",e:"🏋️",n:"Développé couché",d:"Allongé, barre au-dessus de la poitrine. Descends jusqu'à toucher la poitrine, pousse explosif. Garde les omoplates serrées.",reps:"4×8-10"},
   {id:"mu-m2",e:"🦵",n:"Squat",d:"Pieds largeur d'épaules, descends fesses en arrière, genoux dans l'axe des pieds. Profondeur au moins parallèle.",reps:"4×8-10"},
   {id:"mu-m3",e:"💪",n:"Rowing barre",d:"Buste penché ~45°, tire la barre vers le nombril, serre les omoplates en haut.",reps:"4×10"},
   {id:"mu-m4",e:"🦵",n:"Soulevé de terre",d:"Dos droit, barre le long des jambes, pousse avec les jambes puis déplie le buste. Contracte les fessiers en haut.",reps:"4×6-8"},
-  {id:"mu-m5",e:"💪",n:"Développé militaire",d:"Debout ou assis, pousse la barre au-dessus de la tête, gainage abdominal.",reps:"3×8-10"}],
+  {id:"mu-m5",e:"💪",n:"Développé militaire",d:"Debout ou assis, pousse la barre au-dessus de la tête, gainage abdominal.",reps:"3×8-10"},
+  {id:"mu-m6",e:"💪",n:"Curl biceps",d:"Coude collé au corps, monte l’haltère enContractant le biceps, redescends lentement.",reps:"3×12"},
+  {id:"mu-m7",e:"💪",n:"Extension triceps",d:"Haltère au-dessus de la tête, descends derrière la nuque en gardant les coudes serrés.",reps:"3×12"},
+  {id:"mu-m8",e:"🏋️",n:"Élévations latérales",d:"Haltères légers, lève les bras sur le côté jusqu’à l’horizontale, sans balancer.",reps:"3×12"},
+  {id:"mu-m9",e:"🦵",n:"Presse à cuisses",d:"Assis, pousse la plateforme avec les jambes sans verrouiller les genoux.",reps:"4×10"},
+  {id:"mu-m10",e:"🦵",n:"Leg extension",d:"Assis, lève les jambes jusqu’à l’extension complète, redescends contrôlé.",reps:"3×12"},
+  {id:"mu-m11",e:"🦵",n:"Leg curl",d:"Allongé sur le ventre, ramène les talons vers les fessiers.",reps:"3×12"},
+  {id:"mu-m12",e:"🦵",n:"Mollets debout",d:"Sur une marche, monte sur la pointe des pieds, marque une pause, redescends.",reps:"4×15"},
+  {id:"mu-m13",e:"💪",n:"Tirage vertical",d:"À la poulie, tire la barre vers la poitrine, omoplates serrées en bas.",reps:"4×10"},
+  {id:"mu-m14",e:"🍑",n:"Hip thrust",d:"Épaules sur un banc, barre sur les hanches, pousse en contractant les fessiers.",reps:"3×10"},
+  {id:"mu-m15",e:"🏋️",n:"Développé incliné",d:"Banc incliné à 30°, pousse les haltères ou la barre au-dessus de la poitrine haute.",reps:"4×8-10"}],
   stretch:[
   {id:"mu-s1",e:"🧘",n:"Étirement pectoraux",d:"Bras tendu contre un mur, tourne le buste à l'opposé. 30 s par côté.",reps:"30 s"},
   {id:"mu-s2",e:"🧘",n:"Étirement ischio-jambiers",d:"Jambe tendue sur une chaise, penche-toi vers le pied. Garde le dos droit.",reps:"30 s"},
@@ -1158,7 +1170,7 @@ const EXOS={
   {id:"ve-s3",e:"🧘",n:"Étirement dos",d:"Chat-vache sur le vélo ou au sol, mobilise la colonne.",reps:"10×"}]},
  natio:{warmup:[
   {id:"na-w1",e:"🏊",n:"Nage facile",d:"200 m en nage libre tranquille pour élever le rythme cardiaque et sentir l'eau.",reps:"200 m"},
-  {id:"na-w2",e:"🔄",n:"Exercices de jambes",d:"4×50 m avec planche, rythme modéré.",reps:"4×50 m"},
+  {id:"na-w2",e:"🔄",n:"Battements de jambes",d:"4×50 m avec planche, rythme modéré.",reps:"4×50 m"},
   {id:"na-w3",e:"🫁",n:"Exercices de respiration",d:"Inspirer tous les 3 mouvements, puis tous les 5, puis tous les 7.",reps:"3×50 m"}],
   main:[
   {id:"na-m1",e:"🏊",n:"Endurance continue",d:"Nage libre à allure régulière, attention à la technique (rotation, respiration).",reps:"400-1000 m"},
@@ -1271,9 +1283,11 @@ function setExDone(o){localStorage.setItem(exDoneKey(),JSON.stringify(o))}
 /* ===== Carnet d'exercices : mesures par sport/exo ===== */
 const EX_CATS=[["warmup","Échauffement"],["main","Exercices"],["stretch","Étirements"]];
 function customEx(){S.customEx=S.customEx||{};return S.customEx}
+function exNorm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"")}
 function exListFor(sport,cat){const base=(EXOS[sport]&&EXOS[sport][cat])||[];
   const custom=(customEx()[sport]||[]).filter(x=>x.cat===cat).map(x=>Object.assign({},x,{custom:true}));
-  const fromLogs=(S.exlogs||[]).filter(x=>x.sport===sport&&x.cat===cat&&x.ex&&x.ex.indexOf("m:")===0)
+  const known=new Set(base.concat(custom).map(x=>exNorm(x.n)));
+  const fromLogs=(S.exlogs||[]).filter(x=>x.sport===sport&&x.cat===cat&&x.ex&&x.ex.indexOf("m:")===0&&!known.has(exNorm(x.n)))
     .map(x=>({id:x.ex,e:x.e||"🏋️",n:x.n||x.ex,reps:"Mesure libre",d:"Exercice enregistré"}));
   const seen=new Set();return base.concat(custom,fromLogs).filter(x=>{if(seen.has(x.id))return false;seen.add(x.id);return true})}
 function parseTime(s){const m=String(s||"").trim().match(/^(\d+)(?::(\d{1,2}))?$/);if(!m)return 0;
