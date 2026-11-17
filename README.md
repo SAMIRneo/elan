@@ -6,7 +6,7 @@ Version 3, reconstruite de zéro. Remplace « Suivi salle » (v1 dans `ilane`, v
 
 ## Écrans
 
-- ⚡ **Aujourd'hui** : streak 🔥 + 7 derniers jours, objectif principal, 3 anneaux (séances · minutes · eau), barre des minutes du jour, 🎯 **défi du jour** (rotation quotidienne, « Fait ✓ » ou auto-détection), humeur du jour (5 émojis), raccourcis de tes sports favoris **avec ton rang affiché**, gros bouton « ＋ Nouvelle activité », dernières activités
+- ⚡ **Aujourd'hui** : streak 🔥 + 7 derniers jours, **carte Objectifs** à gros chiffres (séances de la semaine en héros, statut du jour, restantes, objectif principal, bouton ✏️ vers Profil), 🎯 **défi du jour** (rotation quotidienne, « Fait ✓ » ou auto-détection), humeur du jour (5 émojis), raccourcis de tes sports favoris **avec ton rang affiché**, gros bouton « ＋ Nouvelle activité », dernières activités
 - 🏋️ **Muscu & Street workout** : exercices **pré-enregistrés** (machines/exos courants + tes historiques), séries kg/rép, détection auto des records
 - 🏃 **Tous les sports** (course, vélo, natation, padel, 🏐 volley, escalade, rando, foot, HIIT, maison, + sports custom) : séance avec durée, distance, exercices minutés (total auto) et note
 - ⭐ **Avis sur la séance** : à chaque enregistrement, note de 1 à 5 étoiles
@@ -27,7 +27,7 @@ Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** r�
 1. Tout dans `index.html` — pas de fichiers CSS/JS séparés, zéro dépendance
 2. Zéro backend, données en localStorage (`el-v1:<compte>`), comptes dans `sg-accounts`
 3. Toute nouvelle couleur a sa déclinaison light **et** dark dans les blocs de tokens
-4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v20`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
+4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v21`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
 5. Cibles tactiles ≥ 44 px
 6. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"` (géré dans `renderAll` + handler `pOk`)
 

@@ -87,12 +87,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
 .tabbar button i{font-style:normal;font-size:21px;line-height:1;transition:transform .15s var(--ease)}
 .tabbar button.on{color:var(--acc-text)}
 .tabbar button.on i{transform:scale(1.18)}
-/* ===== Anneaux ===== */
-.rings{display:flex;align-items:center;gap:14px}
-.rings svg{flex:none}
-.rleg{display:grid;gap:6px;font-size:13px}
-.rleg b{font-variant-numeric:tabular-nums}
-.rdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
 /* ===== Heatmap ===== */
 .heat{display:grid;grid-template-columns:repeat(16,1fr);gap:3px}
 .heat i{aspect-ratio:1;border-radius:3px;background:var(--soft)}
@@ -702,19 +696,12 @@ function onbRender(){document.querySelectorAll("#onbSteps i").forEach((i,x)=>i.c
 const ziso=n=>new Date(n*DAYMS).toISOString().slice(0,10);
 const monday=()=>ziso(dn(today())-((new Date().getDay()+6)%7));
 
-/* ===== Anneaux ===== */
-function ringsSVG(v,max,c){const r=[26,20,14],cols=[arguments[2]?[arguments[2][0],arguments[2][1],arguments[2][2]]:[null,null,null]];
-  const pct=i=>Math.max(0,Math.min(1,(v[i]||0)/Math.max(1e-9,max[i])));
-  return `<svg viewBox="0 0 64 64" width="86" height="86" role="img" aria-label="Anneaux d'objectifs du jour">
-   ${r.map((rr,i)=>{const C=2*Math.PI*rr;return `<circle cx="32" cy="32" r="${rr}" fill="none" stroke="var(--soft)" stroke-width="6"/>`}).join("")}
-   ${r.map((rr,i)=>{const C=2*Math.PI*rr,p=pct(i);return `<circle cx="32" cy="32" r="${rr}" fill="none" stroke="${["var(--r1)","var(--r2)","var(--r3)"][i]}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${(C*p).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 32 32)"/>`}).join("")}</svg>`}
-
 /* ===== Aujourd'hui ===== */
 function weekAct(){const m=monday();return S.acts.filter(a=>a.d>=m)}
 function minOf(a){if(a.s==="muscu")return (S.sets.filter(x=>x.a===a.id||(!x.a&&x.d===a.d)).length)*3;return Math.round(a.met.min||((a.met.km||0)*(a.s==="velo"?4:10)))}
 function renderToday(){const d=new Date(),A=weekAct(),st=streak();
-  const ses=A.length,min=A.reduce((s,a)=>s+minOf(a),0),eau=S.eau[today()]||0;
-  const T=S.acts.filter(a=>a.d===today()),tmin=T.reduce((s,a)=>s+minOf(a),0);
+  const ses=A.length;
+  const T=S.acts.filter(a=>a.d===today());
   const wd=["L","M","M","J","V","S","D"],m=monday();
   const dots=wd.map((l,i)=>{const dd=ziso(dn(m)+i);return `<span>${l}<i class="${activeDays().has(dd)?"on":""}"></i></span>`}).join("");
   const recent=S.acts.slice().sort((a,b)=>b.t-a.t||b.d.localeCompare(a.d)).slice(0,3);
@@ -734,17 +721,20 @@ function renderToday(){const d=new Date(),A=weekAct(),st=streak();
     </div>
   </div>
   <div class="card">
-    <h2>Objectifs</h2>
-    <p class="hint" style="margin-bottom:6px">Objectif principal : <b>${esc((PRIMARY_GOALS.find(g=>g.id===(S.profile.goal||"forme"))||PRIMARY_GOALS[0]).n)}</b></p>
-    <div class="rings">${ringsSVG([ses,min,eau],[S.goals.ses,S.goals.min,S.goals.eau])}
-      <div class="rleg">
-        <span><i class="rdot" style="background:var(--r1)"></i>Séances <b>${ses} / ${S.goals.ses}</b></span>
-        <span><i class="rdot" style="background:var(--r2)"></i>Minutes <b>${hh(min)} / ${hh(S.goals.min)}</b></span>
-        <span><i class="rdot" style="background:var(--r3)"></i>Eau <b>${eau} / ${S.goals.eau} verres</b></span>
-      </div></div>
-    ${(S.fav&&S.fav.length)?`<div style="margin-top:10px;display:grid;gap:6px">${S.fav.map(id=>{const sp=sportOf(id),g=perGoal(id),n=weekCountSport(id),pct=Math.min(100,Math.round(n/Math.max(1,g)*100));return `<div><div class="row" style="padding:0"><span style="font-size:13px">${sp.e} ${esc(sp.n)}</span><small class="hint"><b>${n}/${g}</b> cette semaine</small></div><div class="bar" style="height:6px;margin-top:3px" role="progressbar" aria-label="${esc(sp.n)} cette semaine" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div></div>`}).join("")}</div>`:""}
-    <div class="bar" style="margin-top:10px" role="progressbar" aria-label="Minutes du jour" aria-valuenow="${Math.min(100,Math.round(tmin/S.goals.min*100))}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.min(100,Math.round(tmin/S.goals.min*100))}%"></i></div>
-    <p class="hint" style="margin:4px 0 0">Aujourd'hui : ${T.length?"⚡ séance faite":"🕐 séance à venir"} · ${tmin} min · eau ${eau}/${S.goals.eau}</p>
+    <div class="row" style="margin-bottom:6px"><h2 style="margin:0">Objectifs</h2>
+      <button class="chip" id="editGoals" style="min-height:38px;padding:6px 10px;font-size:12px">✏️ Modifier</button></div>
+    <p class="hint" style="margin:0 0 10px">Objectif principal : <b>${esc((PRIMARY_GOALS.find(g=>g.id===(S.profile.goal||"forme"))||PRIMARY_GOALS[0]).n)}</b></p>
+    <div class="card" style="padding:16px;text-align:center">
+      <div class="num" style="font-size:52px">${ses}<small> / ${S.goals.ses}</small></div>
+      <p class="hint" style="margin:6px 0 8px">séances cette semaine</p>
+      <div class="bar" role="progressbar" aria-label="Séances cette semaine" aria-valuenow="${Math.min(100,Math.round(ses/Math.max(1,S.goals.ses)*100))}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.min(100,Math.round(ses/Math.max(1,S.goals.ses)*100))}%"></i></div>
+    </div>
+    <div class="kpi" style="margin-top:10px">
+      <div class="card" style="padding:12px;text-align:center"><div class="num" style="font-size:30px">${T.length}</div>
+        <p class="hint" style="margin:4px 0 0">aujourd'hui · ${T.length?"⚡ fait":"🕐 à venir"}</p></div>
+      <div class="card" style="padding:12px;text-align:center"><div class="num" style="font-size:30px">${Math.max(0,S.goals.ses-ses)}</div>
+        <p class="hint" style="margin:4px 0 0">restantes cette semaine</p></div>
+    </div>
   </div>
   <div class="card">
     <h2>Défi du jour</h2>
@@ -768,6 +758,7 @@ function renderToday(){const d=new Date(),A=weekAct(),st=streak();
   </div>`;
   $("tt").onclick=toggleTheme;
   $("newAct").onclick=sportPicker;
+  $("editGoals").onclick=()=>setScreen("profil");
   document.querySelectorAll("[data-qs]").forEach(b=>b.onclick=()=>openActForm(b.dataset.qs));
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Supprimer cette activité ?"))return;
     const id=b.dataset.del;const a=S.acts.find(x=>x.id===id);S.acts=S.acts.filter(x=>x.id!==id);
