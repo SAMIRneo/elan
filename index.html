@@ -151,6 +151,26 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
 .tabbtns button.on{border-color:var(--acc);background:var(--acc-soft)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ===== Olympe / Panthéon ===== */
+:root{--ol-or:#f3c969;--ol-marbre:#ece7da;--ol-soft:rgba(243,201,105,.12);--ol-line:rgba(243,201,105,.35)}
+:root[data-theme="light"]{--ol-or:#a9760b;--ol-marbre:#f7f3e8;--ol-soft:rgba(169,118,11,.12);--ol-line:rgba(169,118,11,.35)}
+.ol-hero{border:1.5px solid var(--ol-line);border-radius:18px;padding:16px;margin-bottom:12px;background:linear-gradient(135deg,var(--ol-soft),transparent 70%),var(--card);box-shadow:var(--shadow)}
+.ol-temple{background:linear-gradient(160deg,var(--ol-soft),transparent 60%),var(--card);border-color:var(--ol-line)}
+.ol-rank{color:var(--ol-or);font-weight:800;font-size:13px;white-space:nowrap}
+.ol-bar i{background:linear-gradient(90deg,var(--ol-or),#fff3c4)}
+.ol-cat{border-top:1px solid var(--line);padding:8px 0}
+.ol-cat summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--ol-or);list-style:none;display:flex;justify-content:space-between;min-height:30px;align-items:center}
+.ol-cat summary::-webkit-details-marker{display:none}
+.ol-cat summary b{color:var(--mute);font-size:12px}
+.ol-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.ol-badge{min-height:58px;border-radius:10px;border:1px solid var(--line);background:var(--soft);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;opacity:.32;font-size:18px;text-align:center;padding:3px}
+.ol-badge.on{opacity:1;border-color:var(--ol-or);background:var(--ol-soft);box-shadow:0 0 12px var(--ol-soft)}
+.ol-badge small{font-size:9px;line-height:1.1;color:var(--mute);max-width:100%;overflow:hidden}
+.ol-badge.on small{color:var(--ink)}
+.ol-gods{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px}
+.ol-god{min-height:62px;border-radius:12px;border:1px solid var(--line);background:var(--soft);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:.3;font-size:22px}
+.ol-god small{font-size:9px;color:var(--mute)}
+.ol-god.on{opacity:1;border-color:var(--ol-or);background:var(--ol-soft);color:var(--ol-or)}
 </style>
 </head>
 <body>
@@ -180,6 +200,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
   <section id="sccycle" hidden></section>
   <section id="scexos" hidden></section>
 <section id="scprofil" hidden></section>
+<section id="scpantheon" hidden></section>
 </main>
 <nav class="tabbar" id="tabbar" hidden aria-label="Navigation principale">
   <button data-t="today" aria-current="page"><i>⚡</i>Aujourd'hui</button>
@@ -189,6 +210,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
   <button data-t="exos"><i>🏋️</i>Exos</button>
   <button data-t="cycle"><i>🌙</i>Cycle</button>
   <button data-t="profil"><i>👤</i>Profil</button>
+  <button data-t="pantheon"><i>🏛️</i>Panthéon</button>
 </nav>
 <div class="sheet" id="sheet" hidden><div class="sheetin" id="sheetin"><div class="shgr" aria-hidden="true"></div><div id="sheetc"></div></div></div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -244,7 +266,8 @@ function loadS(){S=Object.assign(fresh(),J("el-v1:"+NAME,true)||{});S.goals=Obje
   S.sports=(S.sports||[]).filter(x=>x&&typeof x==="object"&&x.id);
   S.fav=(S.fav||[]).filter(x=>typeof x==="string"&&sportOf(x));
   S.acts=(S.acts||[]).filter(a=>a&&a.id&&sportOf(a.s));
-  S.dishes=S.dishes||{};S.lvl=S.lvl||{};S.mood=S.mood||{};S.chal=S.chal||{};S.spchal=S.spchal||{};S.wlog=S.wlog||[];S.bx=S.bx||[];}
+  S.dishes=S.dishes||{};S.lvl=S.lvl||{};S.mood=S.mood||{};S.chal=S.chal||{};S.spchal=S.spchal||{};S.wlog=S.wlog||[];S.bx=S.bx||[];
+  if(!S.badgeV2){S.badges=[];S.pantheon=[];S.pantheonComplete=false;S.lvl={};S.badgeV2=true;save()}}
 /* Migration depuis l'ancienne app "Suivi salle" */
 function migrate(){const O=J("suivi-salle-v1:"+NAME,true);if(!O)return;
   try{
@@ -270,20 +293,100 @@ function migrate(){const O=J("suivi-salle-v1:"+NAME,true);if(!O)return;
 function activeDays(){return new Set(S.acts.map(a=>a.d))}
 function streak(){const A=activeDays();let d=today();if(!A.has(d)){d=new Date(Date.parse(today()+"T00:00:00Z")-DAYMS).toISOString().slice(0,10);if(!A.has(d))return 0}
   let n=0;while(A.has(d)){n++;d=new Date(Date.parse(d+"T00:00:00Z")-DAYMS).toISOString().slice(0,10)}return n}
-const BADGES=[
- {id:"first",e:"🥇",n:"Première séance",d:"Ta toute première activité enregistrée",c:()=>S.acts.length>=1},
- {id:"a10",e:"🎖️",n:"10 activités",d:"La régularité s'installe",c:()=>S.acts.length>=10},
- {id:"a25",e:"🏅",n:"25 activités",d:"Tu es lancé",c:()=>S.acts.length>=25},
- {id:"a50",e:"🏆",n:"50 activités",d:"Une vraie habitude",c:()=>S.acts.length>=50},
- {id:"a100",e:"💯",n:"100 activités",d:"Légende du carnet",c:()=>S.acts.length>=100},
- {id:"s3",e:"🔥",n:"3 jours d'affilée",d:"Premier mini-streak",c:()=>streak()>=3},
- {id:"s7",e:"⚡",n:"7 jours d'affilée",d:"Une semaine complète",c:()=>streak()>=7},
- {id:"s14",e:"🌟",n:"14 jours d'affilée",d:"Deux semaines sans trou",c:()=>streak()>=14},
- {id:"s30",e:"👑",n:"30 jours d'affilée",d:"Un mois de discipline",c:()=>streak()>=30},
- {id:"expl",e:"🌈",n:"Explorateur",d:"3 sports différents en 7 jours",c:()=>{const d2=new Date(Date.parse(today()+"T00:00:00Z")-7*DAYMS).toISOString().slice(0,10);return new Set(S.acts.filter(a=>a.d>=d2).map(a=>a.s)).size>=3}},
- {id:"early",e:"🌅",n:"Lève-tôt",d:"Séance validée avant 7 h",c:()=>S.acts.some(a=>{const h=new Date(a.t||0).getHours();return h>0&&h<7})},
- {id:"pr",e:"💪",n:"Nouveau record",d:"Tu as battu ton record en muscu",c:()=>S.prEver===true}
+/* ===== Badges & Rangs — Panthéon de l'Olympe ===== */
+const RANGS=["Éphèbe","Guerrier","Héros","Demi-dieu","Olympien"];
+const RANG_ICONS=["🌿","⚔️","🏆","⚡","👑"];
+const DEITIES=[
+  {id:"hestia",n:"Hestia",e:"🏛️",title:"Déesse du foyer",desc:"Les fondations sont posées."},
+  {id:"demeter",n:"Déméter",e:"🌾",title:"Déesse des moissons",desc:"La régularité porte ses fruits."},
+  {id:"hephaestus",n:"Héphaïstos",e:"🔨",title:"Dieu de la forge",desc:"Tu as forgé ton corps."},
+  {id:"aphrodite",n:"Aphrodite",e:"💖",title:"Déesse de l'amour",desc:"Tu aimes ce que tu fais."},
+  {id:"hermes",n:"Hermès",e:"👟",title:"Messager des dieux",desc:"Rapide et agile."},
+  {id:"artemis",n:"Artémis",e:"🏹",title:"Déesse de la chasse",desc:"Précision et endurance."},
+  {id:"dionysus",n:"Dionysos",e:"🍷",title:"Dieu de l'ivresse",desc:"L'ivresse de l'effort."},
+  {id:"athena",n:"Athéna",e:"🦉",title:"Déesse de la sagesse",desc:"La stratégie et la force."},
+  {id:"apollo",n:"Apollon",e:"☀️",title:"Dieu de la lumière",desc:"Tu rayonnes."},
+  {id:"ares",n:"Arès",e:"⚔️",title:"Dieu de la guerre",desc:"La puissance brute."},
+  {id:"poseidon",n:"Poséidon",e:"🌊",title:"Dieu de la mer",desc:"Une force de la nature."},
+  {id:"hera",n:"Héra",e:"👑",title:"Reine des dieux",desc:"Tu règnes sur ton sport."},
+  {id:"zeus",n:"Zeus",e:"⚡",title:"Roi des dieux",desc:"Le maître de l'Olympe."}
 ];
+const REG_DEF=[
+  {n:"3 jours d'affilée",d:"Pratique 3 jours de suite",t:id=>streakSport(id)>=3},
+  {n:"7 jours d'affilée",d:"Une semaine sans interruption",t:id=>streakSport(id)>=7},
+  {n:"2 séances/semaine × 2",d:"Deux semaines à 2 séances",t:id=>weeksAtLeast(id,2,2)},
+  {n:"14 jours d'affilée",d:"Deux semaines de suite",t:id=>streakSport(id)>=14},
+  {n:"3 séances/semaine × 3",d:"Trois semaines à 3 séances",t:id=>weeksAtLeast(id,3,3)},
+  {n:"21 jours d'affilée",d:"Trois semaines sans interruption",t:id=>streakSport(id)>=21},
+  {n:"4 séances/semaine × 4",d:"Quatre semaines à 4 séances",t:id=>weeksAtLeast(id,4,4)},
+  {n:"30 jours d'affilée",d:"Un mois entier sans pause",t:id=>streakSport(id)>=30},
+  {n:"5 séances/semaine × 5",d:"Cinq semaines à 5 séances",t:id=>weeksAtLeast(id,5,5)},
+  {n:"60 jours d'affilée",d:"Deux mois de discipline",t:id=>streakSport(id)>=60}
+];
+const INSIGNES=[
+  ["Serment d'Éphèbe","Laurier d'Éphèbe","Éclat d'Éphèbe","Sceau d'Éphèbe"],
+  ["Armure de Guerrier","Épée de Guerrier","Bouclier de Guerrier","Sceau de Guerrier"],
+  ["Exploit de Héros","Couronne de Héros","Épopée de Héros","Sceau de Héros"],
+  ["Sang de Demi-dieu","Foudre de Demi-dieu","Trône de Demi-dieu","Sceau de Demi-dieu"],
+  ["Feu d'Olympien","Ambroisie d'Olympien","Temple d'Olympien","Sceau d'Olympien"]
+].flat();
+function streakSport(id){const A=new Set((S.acts||[]).filter(a=>a.s===id).map(a=>a.d));
+  let d=today();if(!A.has(d)){d=new Date(Date.parse(today()+"T00:00:00Z")-DAYMS).toISOString().slice(0,10);if(!A.has(d))return 0}
+  let n=0;while(A.has(d)){n++;d=new Date(Date.parse(d+"T00:00:00Z")-DAYMS).toISOString().slice(0,10)}return n}
+function weeksAtLeast(id,per,n){const m=dn(monday());
+  for(let w=0;w<n;w++){const lo=m-7*w,hi=lo+7;
+    const c=(S.acts||[]).filter(a=>a.s===id&&dn(a.d)>=lo&&dn(a.d)<hi).length;
+    if(c<per)return false}
+  return true}
+function sportCharge(id){const acts=(S.acts||[]).filter(a=>a.s===id),kind=(sportOf(id).kind||"dur");
+  if(kind==="series")return (S.sets||[]).filter(x=>S.acts.some(a=>a.id===x.a&&a.s===id)).reduce((s,x)=>s+(x.w||0),0);
+  if(kind==="dist")return acts.reduce((s,a)=>s+(a.met.km||0),0);
+  return acts.reduce((s,a)=>s+(a.met.min||0),0)}
+function sportCatCount(id){return sportBadgeDefs(id).filter(b=>b.cat!=="rang"&&b.earned).length}
+function sportBadgeDefs(id){
+  const sp=sportOf(id),defs=[],has=bid=>(S.badges||[]).includes(bid);
+  const sess=(S.acts||[]).filter(a=>a.s===id).length,charge=sportCharge(id);
+  for(let k=1;k<=10;k++){const bid="b-"+id+"-s"+k;
+    defs.push({id:bid,e:"📿",n:k*10+" séances",d:"Enregistrer "+k*10+" séances de "+sp.n,cat:"seances",earned:has(bid),cond:()=>sess>=k*10})}
+  REG_DEF.forEach((r,i)=>{const bid="b-"+id+"-r"+(i+1);
+    defs.push({id:bid,e:"🔥",n:r.n,d:r.d,cat:"regularite",earned:has(bid),cond:()=>r.t(id)})});
+  const kind=sp.kind||"dur";
+  const SEUILS=kind==="series"?[100,250,500,1000,2000,3500,5000,7500,10000,15000]
+    :kind==="dist"?[10,25,50,100,250,500,750,1000,1500,2500]
+    :[60,150,300,600,1000,1500,2500,3500,5000,7500];
+  const unite=kind==="series"?"kg soulevés":kind==="dist"?"km cumulés":"min actives";
+  SEUILS.forEach((v,k)=>{const bid="b-"+id+"-c"+(k+1);
+    defs.push({id:bid,e:"⚒️",n:v+" "+unite,d:"Atteindre "+v+" "+unite+" sur "+sp.n,cat:"charge",earned:has(bid),cond:()=>charge>=v})});
+  INSIGNES.forEach((n,i)=>{const bid="b-"+id+"-t"+(i+1),tier=Math.floor(i/4);
+    defs.push({id:bid,e:RANG_ICONS[tier],n:n,d:"Insigne — rang "+RANGS[tier],cat:"rang",earned:has(bid),cond:()=>sportCatCount(id)>=Math.ceil((i+1)*30/20)})});
+  return defs}
+function sportBadgeCount(id){return sportBadgeDefs(id).filter(b=>b.earned).length}
+function sportRank(id){return Math.min(5,Math.floor(sportBadgeCount(id)/10))}
+function isSportFinalized(id){return sportBadgeCount(id)>=50}
+function sportIds(){return [...new Set((S.fav||[]).concat((S.acts||[]).map(a=>a.s)))].filter(x=>x&&x!=="autre")}
+function checkSportBadges(){let got=false;
+  sportIds().forEach(id=>{sportBadgeDefs(id).forEach(b=>{
+    if(!b.earned&&b.cond()){S.badges=(S.badges||[]);S.badges.push(b.id);got=true;
+      celebrate(b.e+" Badge débloqué : "+b.n)}
+  })});
+  if(got)save();return got}
+function checkPantheon(){S.pantheon=S.pantheon||[];let changed=false;
+  sportIds().forEach(id=>{
+    if(isSportFinalized(id)&&!S.pantheon.includes(id)){S.pantheon.push(id);changed=true;
+      const deity=DEITIES[Math.min(S.pantheon.length-1,DEITIES.length-1)];
+      S.badges=S.badges||[];if(!S.badges.includes("pantheon-"+deity.id)){
+        S.badges.push("pantheon-"+deity.id);
+        celebrate(deity.e+" Rang Olympe : "+deity.n+" — "+deity.title)}}});
+  const ids=sportIds();
+  if(ids.length>0&&ids.every(isSportFinalized)&&!S.pantheonComplete){
+    S.pantheonComplete=true;changed=true;
+    S.badges=S.badges||[];if(!S.badges.includes("pantheon-complete")){
+      S.badges.push("pantheon-complete");
+      S.profile.accent="gold";try{applyAccent("gold")}catch(e){}
+      celebrate("⚡🏛️ PANTHÉON COMPLET — Roi des dieux ! Thème Or débloqué.")}}
+  if(changed)save()}
+function checkBadges(){const got=checkSportBadges();checkPantheon();if(got)save()}
+
 /* ===== Personnalisation par sport ===== */
 const PRIMARY_GOALS=[
  {id:"forme",e:"⚡",n:"Rester en forme",d:"Bouger régulièrement, sans pression"},
@@ -332,8 +435,6 @@ const DUOS=[
   {id:"violet",n:"Violet",primary:"#1a1025",accent:"rose",e:"🟣"}
 ];
 function applyDuo(id){const d=DUOS.find(x=>x.id===id);if(!d)return;applyPrimary(d.primary);applyAccent(d.accent);if(S){S.profile.duo=id;save()}}
-const MILESTONES=[5,10,25,50,100];
-const MILE_NAME={5:"Débutant",10:"Régulier",25:"Confirmé",50:"Vétéran",100:"Légende"};
 function perGoal(id){return (S.goals.per||{})[id]||((S.fav||[]).includes(id)?1:0)}
 function weekCountSport(id){const m=monday();return (S.acts||[]).filter(a=>a.s===id&&a.d>=m).length}
 function ensureSport(id){if(!id||id==="autre")return;S.fav=S.fav||[];if(!S.fav.includes(id)){S.fav.push(id);S.goals.per=S.goals.per||{};if(!S.goals.per[id])S.goals.per[id]=1;S.goals.ses=Object.values(S.goals.per).reduce((a,b)=>a+b,0)||S.goals.ses;save();const sp=sportOf(id);toast("🎉 "+sp.e+" "+sp.n+" ajouté à tes sports — objectifs et défis activés !")}}
@@ -423,217 +524,11 @@ function chalPool(){const favs=S.fav||[],pool=[];favs.forEach(id=>{if(id!=="autr
   if(!pool.length)pool.push({id:"sport-today",e:"⚡",n:"Une séance ce jour",d:"Fais au moins une séance ce jour",auto:()=>S.acts.some(a=>a.d===today())});
   const seen=new Set();return pool.filter(x=>{if(seen.has(x.id))return false;seen.add(x.id);return true})}
 function chalOf(d){const pool=chalPool();return pool.length?pool[dn(d)%pool.length]:CHALLENGES[0]}
-function checkSportMilestones(){let got=false;
-  const sports=new Set((S.fav||[]).concat((S.acts||[]).map(a=>a.s)));
-  sports.forEach(id=>{
-    if(!id||id==="autre")return;
-    const sp=sportOf(id),n=(S.acts||[]).filter(a=>a.s===id).length;
-    MILESTONES.forEach(m=>{if(n>=m){const bid="ms-"+id+"-"+m;
-      if(!(S.badges||[]).includes(bid)){S.badges=S.badges||[];S.badges.push(bid);got=true;celebrate(sp.e+" Badge débloqué : "+m+" séances de "+sp.n)}}});
-  });
-  if(got)save()}
-function perfBadgeDefs(){
-  const defs=[];
-  // Course
-  defs.push({id:"pf-course-5k",e:"🏃",n:"5 km en course",d:"Courir au moins 5 km en une seance",cond:()=>S.acts.some(a=>a.s==="course"&&(a.met.km||0)>=5)});
-  defs.push({id:"pf-course-5k30",e:"🏃",n:"5 km en moins de 30 min",d:"Courir 5 km en moins de 30 minutes",cond:()=>S.acts.some(a=>a.s==="course"&&(a.met.km||0)>=5&&(a.met.min||0)>0&&(a.met.min||0)/(a.met.km||1)<=6)});
-  defs.push({id:"pf-course-10k",e:"🏃",n:"10 km en course",d:"Courir au moins 10 km en une seance",cond:()=>S.acts.some(a=>a.s==="course"&&(a.met.km||0)>=10)});
-  defs.push({id:"pf-course-10k60",e:"🏃",n:"10 km en moins de 60 min",d:"Courir 10 km en moins de 60 minutes",cond:()=>S.acts.some(a=>a.s==="course"&&(a.met.km||0)>=10&&(a.met.min||0)>0&&(a.met.min||0)/(a.met.km||1)<=6)});
-  defs.push({id:"pf-course-21",e:"🏃",n:"Semi-marathon",d:"Courir au moins 21.1 km",cond:()=>S.acts.some(a=>a.s==="course"&&(a.met.km||0)>=21.1)});
-  defs.push({id:"pf-course-42",e:"🏃",n:"Marathon",d:"Courir au moins 42.2 km",cond:()=>S.acts.some(a=>a.s==="course"&&(a.met.km||0)>=42.2)});
-  // Velo
-  defs.push({id:"pf-velo-20",e:"🚴",n:"20 km a velo",d:"Pedaler au moins 20 km en une sortie",cond:()=>S.acts.some(a=>a.s==="velo"&&(a.met.km||0)>=20)});
-  defs.push({id:"pf-velo-50",e:"🚴",n:"50 km a velo",d:"Pedaler au moins 50 km en une sortie",cond:()=>S.acts.some(a=>a.s==="velo"&&(a.met.km||0)>=50)});
-  defs.push({id:"pf-velo-100",e:"🚴",n:"100 km a velo",d:"Pedaler au moins 100 km en une sortie",cond:()=>S.acts.some(a=>a.s==="velo"&&(a.met.km||0)>=100)});
-  defs.push({id:"pf-velo-speed",e:"🚴",n:"Velo rapide 25 km/h",d:"Pedaler a plus de 25 km/h de moyenne",cond:()=>S.acts.some(a=>a.s==="velo"&&(a.met.km||0)>0&&(a.met.km||0)/((a.met.min||1)/60)>=25)});
-  // Natation
-  defs.push({id:"pf-natio-1",e:"🏊",n:"1 km nage",d:"Nager au moins 1 km en une seance",cond:()=>S.acts.some(a=>a.s==="natio"&&(a.met.km||0)>=1)});
-  defs.push({id:"pf-natio-2",e:"🏊",n:"2 km nage",d:"Nager au moins 2 km en une seance",cond:()=>S.acts.some(a=>a.s==="natio"&&(a.met.km||0)>=2)});
-  defs.push({id:"pf-natio-30",e:"🏊",n:"30 min de nage",d:"Nager au moins 30 min en une seance",cond:()=>S.acts.some(a=>a.s==="natio"&&(a.met.min||0)>=30)});
-  // Muscu
-  defs.push({id:"pf-muscu-squat100",e:"🏋️",n:"Squat 100 kg",d:"Soulever 100 kg au squat",cond:()=>S.sets.some(x=>x.m==="Squat"&&x.w>=100)});
-  defs.push({id:"pf-muscu-dc80",e:"🏋️",n:"Developpe couche 80 kg",d:"Soulever 80 kg au developpe couche",cond:()=>S.sets.some(x=>x.m==="Développé couché"&&x.w>=80)});
-  defs.push({id:"pf-muscu-sdt100",e:"🏋️",n:"Souleve de terre 100 kg",d:"Soulever 100 kg au souleve de terre",cond:()=>S.sets.some(x=>x.m==="Soulevé de terre"&&x.w>=100)});
-  defs.push({id:"pf-muscu-100sets",e:"🏋️",n:"100 series muscu",d:"Faire 100 series de muscu au total",cond:()=>S.sets.length>=100});
-  // Street workout
-  defs.push({id:"pf-street-10pull",e:"🤸",n:"10 tractions",d:"Faire au moins 10 tractions en une serie",cond:()=>S.sets.some(x=>/traction/i.test(x.m)&&x.r>=10)});
-  defs.push({id:"pf-street-20push",e:"🤸",n:"20 pompes",d:"Faire au moins 20 pompes en une serie",cond:()=>S.sets.some(x=>/pompe/i.test(x.m)&&x.r>=20)});
-  defs.push({id:"pf-street-mu",e:"🤸",n:"Muscle-up reussi",d:"Enregistrer un muscle-up",cond:()=>S.sets.some(x=>/muscle/i.test(x.m))});
-  // HIIT
-  defs.push({id:"pf-hiit-30",e:"🤸",n:"30 min de HIIT",d:"Faire au moins 30 min de HIIT",cond:()=>S.acts.some(a=>a.s==="hiit"&&(a.met.min||0)>=30)});
-  defs.push({id:"pf-hiit-500kcal",e:"🔥",n:"500 kcal brulees",d:"Bruler au moins 500 kcal en une seance",cond:()=>S.acts.some(a=>kcalOf(a)>=500)});
-  // Rando
-  defs.push({id:"pf-rando-10",e:"🥾",n:"10 km de rando",d:"Marcher au moins 10 km en rando",cond:()=>S.acts.some(a=>a.s==="rando"&&(a.met.km||0)>=10)});
-  defs.push({id:"pf-rando-2h",e:"🥾",n:"Rando 2h",d:"Marcher au moins 2h en rando",cond:()=>S.acts.some(a=>a.s==="rando"&&(a.met.min||0)>=120)});
-  // Escalade
-  defs.push({id:"pf-escal-60",e:"🧗",n:"Session escalade 60 min",d:"Grimper au moins 60 min",cond:()=>S.acts.some(a=>a.s==="escal"&&(a.met.min||0)>=60)});
-  // Foot
-  defs.push({id:"pf-foot-90",e:"⚽",n:"Match complet",d:"Jouer au moins 90 min de foot/basket",cond:()=>S.acts.some(a=>a.s==="foot"&&(a.met.min||0)>=90)});
-  // Maison
-  defs.push({id:"pf-maison-30",e:"🏠",n:"30 min a la maison",d:"Bouger au moins 30 min a la maison",cond:()=>S.acts.some(a=>a.s==="maison"&&(a.met.min||0)>=30)});
-  // Padel
-  defs.push({id:"pf-padel-60",e:"🎾",n:"Match padel 60 min",d:"Jouer au moins 60 min de padel",cond:()=>S.acts.some(a=>a.s==="padel"&&(a.met.min||0)>=60)});
-  // Volley
-  defs.push({id:"pf-volley-60",e:"🏐",n:"Match volley 60 min",d:"Jouer au moins 60 min de volley",cond:()=>S.acts.some(a=>a.s==="volley"&&(a.met.min||0)>=60)});
-  return defs}
-function checkPerfBadges(){let got=false;perfBadgeDefs().forEach(b=>{if(!(S.badges||[]).includes(b.id)&&b.cond()){S.badges=S.badges||[];S.badges.push(b.id);got=true;celebrate(b.e+" Badge débloqué : "+b.n)}});if(got)save()}
-function perfBadges(){return perfBadgeDefs().map(b=>({id:b.id,e:b.e,n:b.n,d:b.d,earned:(S.badges||[]).includes(b.id)}))}
-
-// Hook checkPerfBadges into checkBadges
-function commonSportBadges(id,sp){
-  const defs=[];
-  const cnt=()=> (S.acts||[]).filter(a=>a.s===id).length;
-  const days=()=> new Set((S.acts||[]).filter(a=>a.s===id).map(a=>a.d));
-  const streakSport=()=>{const A=days();let d=today();if(!A.has(d)){d=new Date(Date.parse(today()+"T00:00:00Z")-86400000).toISOString().slice(0,10);if(!A.has(d))return 0}let n=0;while(A.has(d)){n++;d=new Date(Date.parse(d+"T00:00:00Z")-86400000).toISOString().slice(0,10)}return n};
-  // Séances milestones
-  [1,3,5,10,15,20,25,30,50,75,100].forEach(m=>defs.push({id:"sb-"+id+"-s"+m,e:sp.e,n:m+" seances de "+sp.n,d:"Enregistrer "+m+" seances de "+sp.n,cond:()=>cnt()>=m}));
-  // Statuses (paliers de 10)
-  [{m:10,n:"Debutant",e:"🥉"},{m:20,n:"Regulier",e:"🥈"},{m:30,n:"Confirme",e:"🥇"},{m:40,n:"Expert",e:"🏅"},{m:50,n:"Maitre",e:"👑"},{m:60,n:"Elite",e:"💎"},{m:70,n:"Champion",e:"🏆"},{m:80,n:"Legende vivante",e:"🌟"},{m:90,n:"Mythique",e:"✨"},{m:100,n:"Immortel",e:"🔥"}].forEach(s=>defs.push({id:"sb-"+id+"-status"+s.m,e:s.e,n:s.n+" "+sp.n,d:"Atteindre "+s.m+" seances de "+sp.n,cond:()=>cnt()>=s.m}));
-  // Streak par sport
-  [3,7,14,30].forEach(m=>defs.push({id:"sb-"+id+"-str"+m,e:"🔥",n:m+" jours d'affilee en "+sp.n,d:"Pratiquer "+sp.n+" "+m+" jours d'affilee",cond:()=>streakSport()>=m}));
-  return defs;
-}
-function sportBadgeDefs(id){
-  const sp=sportOf(id);const defs=commonSportBadges(id,sp);
-  const acts=(S.acts||[]).filter(a=>a.s===id);
-  const cnt=()=>acts.length;
-  const km=acts.reduce((s,a)=>s+(a.met.km||0),0);
-  const mins=acts.reduce((s,a)=>s+(a.met.min||0),0);
-  const maxKm=acts.reduce((m,a)=>Math.max(m,a.met.km||0),0);
-  const maxMin=acts.reduce((m,a)=>Math.max(m,a.met.min||0),0);
-  if(id==="muscu"){
-    const sets=(S.sets||[]).filter(x=>S.acts.some(a=>a.id===x.a&&a.s==="muscu"));
-    const maxW=sets.reduce((m,x)=>Math.max(m,x.w||0),0);
-    const distinct=new Set(sets.map(x=>x.m)).size;
-    const totalSets=sets.length;
-    [1,5,10,25,50].forEach(m=>defs.push({id:"sb-muscu-totalsets"+m,e:"🏋️",n:m+" series au total",d:"Faire "+m+" series de muscu",cond:()=>totalSets>=m}));
-    [3,5,8,10].forEach(m=>defs.push({id:"sb-muscu-distinct"+m,e:"🎯",n:m+" exercices differents",d:"Travailler "+m+" exercices differents",cond:()=>distinct>=m}));
-    [50,60,80,100,120].forEach(w=>defs.push({id:"sb-muscu-w"+w,e:"💪",n:"Charge "+w+" kg",d:"Soulever "+w+" kg sur un exercice",cond:()=>sets.some(x=>(x.w||0)>=w)}));
-    [50,100,200,500].forEach(m=>defs.push({id:"sb-muscu-vol"+m,e:"📊",n:m+" reps au total",d:"Faire "+m+" repetitions au total",cond:()=>sets.reduce((s,x)=>s+(x.r||0),0)>=m}));
-    defs.push({id:"sb-muscu-pr",e:"🏆",n:"Premier record",d:"Battre son premier record",cond:()=>S.prEver===true});
-    defs.push({id:"sb-muscu-full",e:"🏋️",n:"Seance full body",d:"Travailler haut et bas du corps le meme jour",cond:()=>S.acts.some(a=>a.s==="muscu"&&a.d===today())});
-  }
-  if(id==="course"||id==="rando"){
-    [1,2,3,5,10,15,21.1,42.2].forEach(d=>{if(d<=maxKm||acts.some(a=>(a.met.km||0)>=d))defs.push({id:"sb-"+id+"-km"+d,e:id==="course"?"🏃":"🥾",n:d+" km",d:"Parcourir "+d+" km en une seance",cond:()=>acts.some(a=>(a.met.km||0)>=d)})});
-    [15,30,45,60,90,120].forEach(m=>defs.push({id:"sb-"+id+"-min"+m,e:id==="course"?"🏃":"🥾",n:m+" min de "+(id==="course"?"course":"rando"),d:"Faire au moins "+m+" min",cond:()=>acts.some(a=>(a.met.min||0)>=m)}));
-    defs.push({id:"sb-"+id+"-pace",e:"⚡",n:"Allure rapide",d:"Allure sous 6 min/km",cond:()=>acts.some(a=>(a.met.km||0)>0&&(a.met.min||0)/(a.met.km||1)<=6)});
-    defs.push({id:"sb-"+id+"-rec",e:"🏆",n:"Record de distance",d:"Battre son record de distance",cond:()=>{const pk=S.acts.filter(a=>a.d<today()&&a.s===id).reduce((m,a)=>Math.max(m,a.met.km||0),0);return pk>0&&acts.some(a=>(a.met.km||0)>pk)}});
-
-  }
-  if(id==="velo"){
-    [5,10,20,30,50,75,100].forEach(d=>defs.push({id:"sb-velo-km"+d,e:"🚴",n:d+" km a velo",d:"Pedaler au moins "+d+" km",cond:()=>acts.some(a=>(a.met.km||0)>=d)}));
-    [30,45,60,90,120,180].forEach(m=>defs.push({id:"sb-velo-min"+m,e:"🚴",n:m+" min de velo",d:"Pedaler au moins "+m+" min",cond:()=>acts.some(a=>(a.met.min||0)>=m)}));
-    defs.push({id:"sb-velo-speed",e:"🚴",n:"25 km/h de moyenne",d:"Pedaler a plus de 25 km/h",cond:()=>acts.some(a=>(a.met.km||0)>0&&(a.met.km||0)/((a.met.min||1)/60)>=25)});
-    defs.push({id:"sb-velo-speed30",e:"🚴",n:"30 km/h de moyenne",d:"Pedaler a plus de 30 km/h",cond:()=>acts.some(a=>(a.met.km||0)>0&&(a.met.km||0)/((a.met.min||1)/60)>=30)});
-  }
-  if(id==="natio"){
-    [0.5,1,1.5,2,3,5].forEach(d=>defs.push({id:"sb-natio-km"+d,e:"🏊",n:d+" km nage",d:"Nager au moins "+d+" km",cond:()=>acts.some(a=>(a.met.km||0)>=d)}));
-    [20,30,45,60].forEach(m=>defs.push({id:"sb-natio-min"+m,e:"🏊",n:m+" min de nage",d:"Nager au moins "+m+" min",cond:()=>acts.some(a=>(a.met.min||0)>=m)}));
-    defs.push({id:"sb-natio-rec",e:"🏆",n:"Record de distance",d:"Battre son record de distance en nage",cond:()=>{const tk=acts.reduce((s,a)=>s+(a.met.km||0),0);const pk=S.acts.filter(a=>a.d<today()&&a.s===id).reduce((m,a)=>Math.max(m,a.met.km||0),0);return pk>0&&acts.some(a=>(a.met.km||0)>pk)}});
-  }
-  if(id==="padel"||id==="volley"||id==="foot"){
-    const em=id==="padel"?"🎾":id==="volley"?"🏐":"⚽";
-    [30,45,60,90].forEach(m=>defs.push({id:"sb-"+id+"-min"+m,e:em,n:m+" min de "+sp.n,d:"Jouer au moins "+m+" min",cond:()=>acts.some(a=>(a.met.min||0)>=m)}));
-    [2,3,5].forEach(m=>defs.push({id:"sb-"+id+"-sessions"+m,e:em,n:m+" seances",d:"Faire "+m+" seances",cond:()=>acts.length>=m}));
-  }
-  if(id==="escal"){
-    [30,45,60,90,120].forEach(m=>defs.push({id:"sb-escal-min"+m,e:"🧗",n:m+" min d'escalade",d:"Grimper au moins "+m+" min",cond:()=>acts.some(a=>(a.met.min||0)>=m)}));
-    [3,5,10].forEach(m=>defs.push({id:"sb-escal-sessions"+m,e:"🧗",n:m+" seances d'escalade",d:"Grimper "+m+" fois",cond:()=>acts.length>=m}));
-  }
-  if(id==="rando"){
-    [3,5,8,10,15,20].forEach(m=>defs.push({id:"sb-rando-sessions"+m,e:"🥾",n:m+" randonnees",d:"Faire "+m+" randonnees",cond:()=>acts.length>=m}));
-  }
-  if(id==="hiit"){
-    [10,20,30,45,60].forEach(m=>defs.push({id:"sb-hiit-min"+m,e:"🤸",n:m+" min de HIIT",d:"Faire au moins "+m+" min de HIIT",cond:()=>acts.some(a=>(a.met.min||0)>=m)}));
-    [5,10,20].forEach(m=>defs.push({id:"sb-hiit-sessions"+m,e:"🤸",n:m+" seances de HIIT",d:"Faire "+m+" seances de HIIT",cond:()=>acts.length>=m}));
-    defs.push({id:"sb-hiit-500",e:"🔥",n:"500 kcal brulees",d:"Bruler 500 kcal en une seance",cond:()=>acts.some(a=>kcalOf(a)>=500)});
-    defs.push({id:"sb-hiit-300",e:"🔥",n:"300 kcal brulees",d:"Bruler 300 kcal en une seance",cond:()=>acts.some(a=>kcalOf(a)>=300)});
-  }
-  if(id==="street"){
-    [10,20,30,50,100].forEach(m=>defs.push({id:"sb-street-reps"+m,e:"🤸",n:m+" reps au total",d:"Faire "+m+" repetitions au total",cond:()=>(S.sets||[]).filter(x=>S.acts.some(a=>a.id===x.a&&a.s==="street")).reduce((s,x)=>s+(x.r||0),0)>=m}));
-    [3,5,8,10].forEach(m=>defs.push({id:"sb-street-ex"+m,e:"🎯",n:m+" exercices differents",d:"Travailler "+m+" exercices differents",cond:()=>new Set((S.sets||[]).filter(x=>S.acts.some(a=>a.id===x.a&&a.s==="street")).map(x=>x.m)).size>=m}));
-    [5,10,15,20].forEach(m=>defs.push({id:"sb-street-sets"+m,e:"🤸",n:m+" series",d:"Faire "+m+" series",cond:()=>(S.sets||[]).filter(x=>S.acts.some(a=>a.id===x.a&&a.s==="street")).length>=m}));
-    defs.push({id:"sb-street-mu",e:"🤸",n:"Muscle-up reussi",d:"Enregistrer un muscle-up",cond:()=>(S.sets||[]).some(x=>/muscle/i.test(x.m))});
-  }
-  if(id==="maison"){
-    [15,20,30,45,60].forEach(m=>defs.push({id:"sb-maison-min"+m,e:"🏠",n:m+" min a la maison",d:"Bouger au moins "+m+" min a la maison",cond:()=>acts.some(a=>(a.met.min||0)>=m)}));
-    [3,5,10,15,20].forEach(m=>defs.push({id:"sb-maison-sessions"+m,e:"🏠",n:m+" seances a la maison",d:"Faire "+m+" seances a la maison",cond:()=>acts.length>=m}));
-    [3,5,8].forEach(m=>defs.push({id:"sb-maison-ex"+m,e:"🎯",n:m+" exercices differents",d:"Faire "+m+" exercices differents",cond:()=>true}));
-  }
-  // Extra badges pour atteindre 50+
-  [2,4,6,7,8,9,11,13,14,16,17,19,21,22,23,24,26,27,28,29,31,32,33,34,36,37,38,39,41,42,43,44,46,47,48,49].forEach(m=>defs.push({id:"sb-"+id+"-sx"+m,e:sp.e,n:m+" seances de "+sp.n,d:"Enregistrer "+m+" seances de "+sp.n,cond:()=>cnt()>=m}));
-  [5,6,7,8,9,10,11,12,13,14].forEach(m=>defs.push({id:"sb-"+id+"-strx"+m,e:"🔥",n:m+" jours d'affilee en "+sp.n,d:"Pratiquer "+sp.n+" "+m+" jours d'affilee",cond:()=>{const A=new Set((S.acts||[]).filter(a=>a.s===id).map(a=>a.d));let d=today(),n=0;while(A.has(d)){n++;d=new Date(Date.parse(d+"T00:00:00Z")-86400000).toISOString().slice(0,10)}return n>=m}}));
-  defs.push({id:"sb-"+id+"-comeback",e:sp.e,n:"Retour en force",d:"Reprendre "+sp.n+" apres une pause",cond:()=>acts.length>=2&&acts.some(a=>a.d===today())});
-  defs.push({id:"sb-"+id+"-weekend",e:sp.e,n:"Week-end actif",d:"Pratiquer "+sp.n+" un week-end",cond:()=>acts.some(a=>{const d=new Date(a.d+"T00:00:00Z").getDay();return d===0||d===6})});
-  defs.push({id:"sb-"+id+"-matin",e:sp.e,n:"Matinal",d:"Pratiquer "+sp.n+" avant 8h",cond:()=>acts.some(a=>new Date(a.t||0).getHours()<8)});
-  defs.push({id:"sb-"+id+"-soir",e:sp.e,n:"Soiree",d:"Pratiquer "+sp.n+" apres 18h",cond:()=>acts.some(a=>new Date(a.t||0).getHours()>=18)});
-  defs.push({id:"sb-"+id+"-fidèle",e:sp.e,n:"Fidele",d:"Pratiquer "+sp.n+" 4 semaines de suite",cond:()=>acts.length>=4});
-    // Global per-sport badges
-  defs.push({id:"sb-"+id+"-first",e:sp.e,n:"Premiere seance",d:"Ta premiere seance de "+sp.n,cond:()=>acts.length>=1});
-  defs.push({id:"sb-"+id+"-regular",e:sp.e,n:"Regulier",d:"Pratiquer "+sp.n+" regulierement",cond:()=>acts.length>=10});
-  defs.push({id:"sb-"+id+"-passion",e:sp.e,n:"Passionne",d:"Pratiquer "+sp.n+" avec passion",cond:()=>acts.length>=50});
-  defs.push({id:"sb-"+id+"-legende",e:sp.e,n:"Legende",d:"Devenir une legende de "+sp.n,cond:()=>acts.length>=100});
-  return defs;
-}
-const DEITIES=[
- {id:"hestia",n:"Hestia",e:"🏛️",title:"Deesse du foyer",desc:"La premiere a s'asseoir. Tu as pose les fondations."},
- {id:"demeter",n:"Demeter",e:"🌾",title:"Deesse des moissons",desc:"La regularite porte ses fruits."},
- {id:"hephaestus",n:"Hephaistos",e:"🔨",title:"Dieu de la forge",desc:"Tu as forge ton corps."},
- {id:"aphrodite",n:"Aphrodite",e:"💖",title:"Deesse de l'amour",desc:"Tu aimes ce que tu fais."},
- {id:"hermes",n:"Hermes",e:"👟",title:"Messager des dieux",desc:"Rapide et agile."},
- {id:"artemis",n:"Artemis",e:"🏹",title:"Deesse de la chasse",desc:"Precision et endurance."},
- {id:"dionysus",n:"Dionysos",e:"🍷",title:"Dieu de l'ivresse",desc:"L'ivresse de l'effort."},
- {id:"athena",n:"Athena",e:"🦉",title:"Deesse de la sagesse",desc:"La strategie et la force."},
- {id:"apollo",n:"Apollon",e:"☀️",title:"Dieu de la lumiere",desc:"Tu rayonnes."},
- {id:"ares",n:"Ares",e:"⚔️",title:"Dieu de la guerre",desc:"La puissance brute."},
- {id:"poseidon",n:"Poseidon",e:"🌊",title:"Dieu de la mer",desc:"Une force de la nature."},
- {id:"hera",n:"Hera",e:"👑",title:"Reine des dieux",desc:"Tu regnes sur ton sport."},
- {id:"zeus",n:"Zeus",e:"⚡",title:"Roi des dieux",desc:"Le maitre de l'Olympe."}
-];
-function isSportFinalized(id){const defs=sportBadgeDefs(id);return defs.length>0&&defs.every(b=>(S.badges||[]).includes(b.id))}
-function checkPantheon(){S.pantheon=S.pantheon||[];let changed=false;
-  (S.fav||[]).forEach(id=>{
-    if(!id||id==="autre")return;
-    if(isSportFinalized(id)&&!S.pantheon.includes(id)){S.pantheon.push(id);changed=true;
-      const deity=DEITIES[Math.min(S.pantheon.length-1,DEITIES.length-1)];
-      S.badges=S.badges||[];if(!S.badges.includes("pantheon-"+deity.id)){S.badges.push("pantheon-"+deity.id);celebrate(deity.e+" Pantheon debloque : "+deity.n+" — "+deity.title)}
-    }
-  });
-  const favs=(S.fav||[]).filter(x=>x!=="autre");
-  if(favs.length>0&&favs.every(isSportFinalized)&&!S.pantheonComplete){
-    S.pantheonComplete=true;changed=true;
-    S.badges=S.badges||[];if(!S.badges.includes("pantheon-complete")){
-      S.badges.push("pantheon-complete");
-      S.profile.accent="gold";try{applyAccent("gold")}catch(e){}
-      celebrate("⚡🏛️ PANTHÉON COMPLET — Tu es devenu DIEU DU SPORT ! Thème OR débloqué à jamais.")
-    }
-  }
-  if(changed)save()}
-function sportBadgeDefs_all(){const out=[],seen={};(S.fav||[]).concat((S.acts||[]).map(a=>a.s)).forEach(id=>{if(id&&id!=="autre"&&!seen[id]){seen[id]=1;out.push(...sportBadgeDefs(id))}});return out}
-function checkSportBadges(){let got=false;sportBadgeDefs_all().forEach(b=>{if(!(S.badges||[]).includes(b.id)&&b.cond()){S.badges=S.badges||[];S.badges.push(b.id);got=true;celebrate(b.e+" Badge débloqué : "+b.n)}});if(got)save()}
-function sportBadgesAll(){return sportBadgeDefs_all().map(b=>({id:b.id,e:b.e,n:b.n,d:b.d,earned:(S.badges||[]).includes(b.id)}))}
-
-function sportBadges(){const out=[];const sports=new Set((S.fav||[]).concat((S.acts||[]).map(a=>a.s)));
-  sports.forEach(id=>{
-    if(!id||id==="autre")return;
-    const sp=sportOf(id),n=(S.acts||[]).filter(a=>a.s===id).length;
-    let next=null;MILESTONES.forEach(m=>{if(n<m&&(next===null||m<next))next=m});
-    MILESTONES.forEach(m=>{if(n>=m)out.push({id:"ms-"+id+"-"+m,e:sp.e,n:m+" séances de "+sp.n,d:MILE_NAME[m]+" · "+sp.n,earned:true})});
-    if(next)out.push({id:"ms-"+id+"-"+next,e:sp.e,n:next+" séances de "+sp.n,d:"Encore "+(next-n)+" séance"+(next-n>1?"s":"")+" pour débloquer",earned:false});
-  });
-  return out}
-
-function checkBadges(){let got=false;BADGES.forEach(b=>{if(!S.badges.includes(b.id)&&b.c()){S.badges.push(b.id);got=true;celebrate(b.e+" Badge débloqué : "+b.n)}});checkSportMilestones();checkPerfBadges();checkSportBadges();checkPantheon();if(got)save()}
 
 /* ===== Exercices pré-enregistrés ===== */
 const MACHINES=["Dips","Tractions","Pompes","Muscle-up","Front lever","Planche","L-sit","Handstand","Gainage","Squat poids du corps","Fentes","Burpees","Jumping jacks","Corde à sauter","Développé couché","Développé incliné","Squat","Presse à cuisses","Leg extension","Leg curl","Mollets debout","Soulevé de terre","Rowing barre","Rowing haltère","Tirage vertical","Tirage horizontal","Traction","Dips","Pompes","Curl biceps","Extension triceps","Élévations latérales","Développé épaules","Hip thrust","Fentes","Crunch","Gainage","Pec deck","Abducteur","Adducteur","Papier / vélo d'appartement"];
 function machineList(){return [...new Set(MACHINES.concat((S.sets||[]).map(x=>x.m).filter(Boolean)))]}
 
-/* ===== Niveaux par sport (auto par défaut, réglable à la main) ===== */
-const NIV=["Débutant","Intermédiaire","Confirmé","Expert"];
-function lvlOf(id){const L=(S.lvl||{})[id];if(L&&L.man)return Math.max(1,Math.min(4,L.v));
-  const n=S.acts.filter(a=>a.s===id).length;return n>=30?4:n>=15?3:n>=5?2:1}
-function lvlSet(id,v){S.lvl=S.lvl||{};S.lvl[id]={v:Math.max(1,Math.min(4,v)),man:true};save()}
 
 /* ===== Assiettes-types (nutrition rapide) ===== */
 const ASSIETTES={
@@ -672,7 +567,6 @@ function checkChallenges(){const c=chalOf(today()),st=chalState(today());
     const nw=S.acts.filter(a=>a.s===sport&&a.d>=m).length;
     if(nw>=2){const key=sport+"@"+m;S.spchal=S.spchal||{};if(!S.spchal[key]){S.spchal[key]=true;const sp=sportOf(sport);earnChallenge("sp",key,"💎","Défi "+sp.n+" : 2 séances cette semaine")}}
   });
-  checkSportMilestones();
   save()}
 
 /* ===== Humeur ===== */
@@ -723,7 +617,7 @@ function renderAll(){if(!S||!NAME)return;
   const femme=S.profile.sexe==="femme";
   if(cy)cy.style.display=femme?"flex":"none";
   if(!femme&&SCR==="cycle"){SCR="today";document.querySelectorAll("main section").forEach(s=>s.hidden=s.id!=="sctoday")}
-  ({today:renderToday,journal:renderJournal,progres:renderProgres,nut:renderNut,exos:renderExos,cycle:renderCycle,profil:renderProfil})[SCR]()}
+  ({today:renderToday,journal:renderJournal,progres:renderProgres,nut:renderNut,exos:renderExos,cycle:renderCycle,profil:renderProfil,pantheon:renderPantheon})[SCR]()}
 
 /* ===== Comptes ===== */
 function accs(){return J("sg-accounts",true)||{}}
@@ -784,28 +678,22 @@ function onbRender(){document.querySelectorAll("#onbSteps i").forEach((i,x)=>i.c
     const sports=onbD.sports||[];
     const sportCards=sports.map(id=>{
       const sp=sportOf(id);
-      const lvlBtns=NIV.map((n,k)=>'<button type="button" class="chip'+(k===0?' on':'')+'" data-l="'+(k+1)+'">'+n+'</button>').join('');
       const rhyBtns=[1,2,3,4,5].map(n=>'<button type="button" class="chip'+(n===2?' on':'')+'" data-r="'+n+'">'+n+'</button>').join('');
       return '<div class="card" style="padding:10px"><div class="row"><b>'+sp.e+' '+esc(sp.n)+'</b></div>'
-        +'<label class="lbl" style="margin-top:6px">Niveau</label>'
-        +'<div class="chips" data-lv="'+id+'">'+lvlBtns+'</div>'
         +'<label class="lbl" style="margin-top:6px">Séances / semaine</label>'
         +'<div class="chips" data-rh="'+id+'">'+rhyBtns+'</div></div>';
     }).join('');
-    C.innerHTML='<h3 style="margin-top:6px">Ton niveau et ton rythme</h3>'
-      +'<p class="hint">Pour chaque sport : ton niveau actuel et combien de fois par semaine tu vises.</p>'
+    C.innerHTML='<h3 style="margin-top:6px">Ton rythme</h3>'
+      +'<p class="hint">Pour chaque sport : combien de fois par semaine tu vises.</p>'
       +'<div style="display:grid;gap:12px;margin-top:8px">'+sportCards+'</div>'
       +'<button class="btn big" id="obNext" style="margin-top:14px">C est parti</button>';
-    const levels={},rhythm={};
-    sports.forEach(id=>{levels[id]=1;rhythm[id]=2});
-    document.querySelectorAll("[data-lv]").forEach(w=>{
-      const id=w.dataset.lv;w.querySelectorAll("button").forEach(b=>{b.onclick=()=>{w.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");levels[id]=+b.dataset.l}});
-    });
+    const rhythm={};
+    sports.forEach(id=>{rhythm[id]=2});
     document.querySelectorAll("[data-rh]").forEach(w=>{
       const id=w.dataset.rh;w.querySelectorAll("button").forEach(b=>{b.onclick=()=>{w.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");rhythm[id]=+b.dataset.r}});
     });
     $("obNext").onclick=()=>{Object.assign(S.profile,onbD);S.profile.done=true;S.profile.goal=onbD.goal||"forme";
-      S.goals.per=S.goals.per||{};sports.forEach(id=>{S.goals.per[id]=rhythm[id]||1;S.lvl=S.lvl||{};S.lvl[id]={v:levels[id]||1,man:true}});
+      S.goals.per=S.goals.per||{};sports.forEach(id=>{S.goals.per[id]=rhythm[id]||1});
       S.goals.ses=Object.values(S.goals.per).reduce((a,b)=>a+b,0)||3;
       S.goals.min=Math.max(30*Object.keys(S.goals.per).length,S.goals.min||180);
       S.fav=sports;save();
@@ -872,7 +760,7 @@ function renderToday(){const d=new Date(),A=weekAct(),st=streak();
   <button class="btn big" id="newAct">＋ Nouvelle activité</button>
   <div class="card" style="margin-top:12px">
     <h2>Raccourcis</h2>
-    <div class="chips">${(S.fav&&S.fav.length?S.fav:["muscu","course"]).map(id=>{const s=sportOf(id);return `<button type="button" class="chip" data-qs="${s.id}">${s.e} ${esc(s.n)} <small class="hint" style="margin-left:2px">· ${NIV[lvlOf(id)-1]}</small></button>`}).join("")}
+    <div class="chips">${(S.fav&&S.fav.length?S.fav:["muscu","course"]).map(id=>{const s=sportOf(id);return `<button type="button" class="chip" data-qs="${s.id}">${s.e} ${esc(s.n)} <small class="hint" style="margin-left:2px">· ${RANGS[sportRank(id)-1]||"Mortel"}</small></button>`}).join("")}
     <button type="button" class="chip" data-qs="other">＋ Autre</button></div>
   </div>
   ${!activeDays().has(today())&&d.getHours()>=15?`<p class="hint" style="text-align:center;margin:4px 0 10px">Pas encore de séance aujourd'hui — même 20 min comptent ⚡</p>`:""}
@@ -979,7 +867,6 @@ function renderJournal(){const A=S.acts.slice().sort((a,b)=>b.d.localeCompare(a.
     if(a&&a.s==="muscu")S.sets=S.sets.filter(x=>x.a!==id);save();renderAll()})}
 
 /* ===== Progrès ===== */
-let progBadgeSport=null;
 
 function renderProgres(){const da=activeDays();
   /* heatmap 16 semaines */
@@ -1010,27 +897,58 @@ function renderProgres(){const da=activeDays();
     <div id="rcChart" style="margin-top:10px"></div>
     <ul style="list-style:none;margin:10px 0 0;padding:0">${recList}</ul></div>`:""}
   ${sportRows?`<div class="card"><h2>Répartition — 30 jours</h2>${sportRows}</div>`:""}
-  <div class="card"><h2>Badges — ${S.badges.length+S.bx.length} gagnés</h2>
-    ${S.bx.length?`<div style="display:grid;gap:8px;margin-bottom:10px">${S.bx.slice().reverse().map(b=>`<div class="bdg"><em>${b.e}</em><div class="grow"><b>${esc(b.n)}</b><small class="hint" style="display:block">${esc(b.d)}</small></div></div>`).join("")}</div>`:""}
-    <div style="display:grid;gap:8px">${BADGES.map(b=>`<div class="bdg${S.badges.includes(b.id)?"":" off"}"><em>${b.e}</em><div class="grow"><b>${b.n}</b><small class="hint" style="display:block">${b.d}</small></div>${S.badges.includes(b.id)?"<small class='hint'>✓</small>":""}</div>`).join("")}</div></div>`;
+  `;
 
-  if(recList){const chart=()=>{const mm=$("rcSel").value;
+    if(recList){const chart=()=>{const mm=$("rcSel").value;
       const byDay={};S.sets.filter(x=>x.m===mm&&x.w>0).forEach(x=>byDay[x.d]=Math.max(byDay[x.d]||0,x.w));
       const pts=Object.keys(byDay).sort().map(d=>({d,y:byDay[d]}));
       $("rcChart").innerHTML=svgLine(pts,70,"séances")+(pts.length>1?`<p class="hint" style="margin-top:4px">${fn(pts[0].y)} kg → ${fn(pts[pts.length-1].y)} kg depuis ${fd(pts[0].d)}</p>`:"")};
-    $("rcSel").onchange=chart;chart()}
+    $("rcSel").onchange=chart;chart()}}
 
 
-  /* Badges par sport (rendu separe) */
-  if(!progBadgeSport||!(S.fav||[]).includes(progBadgeSport))progBadgeSport=(S.fav&&S.fav.length)?S.fav[0]:"muscu";
-  const _spBadges=sportBadgesAll().filter(b=>b.id.startsWith("sb-"+progBadgeSport+"-")||b.id.startsWith("ms-"+progBadgeSport+"-"));
-  const _spCard=document.createElement("div");
-  _spCard.className="card";
-  const _chips=(S.fav||[]).map(id=>{const sp=sportOf(id);return '<button type="button" class="chip'+(id===progBadgeSport?" on":"")+'" data-pbs="'+id+'">'+sp.e+' '+esc(sp.n)+'</button>'}).join("");
-  const _badges=_spBadges.map(b=>'<div class="bdg'+(b.earned?"":" off")+'"><em>'+b.e+'</em><div class="grow"><b>'+b.n+'</b><small class="hint" style="display:block">'+b.d+'</small></div>'+(b.earned?"<small class='hint'>✓</small>":"")+'</div>').join("");
-  _spCard.innerHTML='<h2>Badges par sport</h2><div class="chips" style="margin-bottom:10px">'+_chips+'</div><div style="display:grid;gap:8px">'+_badges+'</div>';
-  $("scprogres").appendChild(_spCard);
-  document.querySelectorAll("[data-pbs]").forEach(b=>b.onclick=()=>{progBadgeSport=b.dataset.pbs;renderProgres()})}
+/* ===== Panthéon (Olympe) ===== */
+function renderPantheon(){
+  const ids=sportIds(),done=(S.pantheon||[]).length;
+  const rang=DEITIES[Math.min(done,DEITIES.length)-1]||DEITIES[0];
+  const suivant=DEITIES[Math.min(done,DEITIES.length-1)];
+  const cats=[["seances","📿 Séances"],["regularite","🔥 Régularité"],["charge","⚒️ Charge"],["rang","👑 Rangs"]];
+  const sportCards=ids.map(id=>{
+    const sp=sportOf(id),defs=sportBadgeDefs(id);
+    const n=defs.filter(b=>b.earned).length,r=sportRank(id);
+    const blocs=cats.map(([k,label])=>{
+      const list=defs.filter(b=>b.cat===k);
+      const gagnees=list.filter(b=>b.earned).length;
+      const cases=list.map(b=>`<div class="ol-badge${b.earned?" on":""}" title="${esc(b.n)} — ${esc(b.d)}">${b.e}<small>${esc(b.n)}</small></div>`).join("");
+      return `<details class="ol-cat"><summary>${label}<b>${gagnees}/${list.length}</b></summary><div class="ol-grid">${cases}</div></details>`;
+    }).join("");
+    return `<div class="card ol-temple">
+      <div class="row"><b style="font-size:17px">${sp.e} ${esc(sp.n)}</b>
+        <span class="ol-rank">${RANG_ICONS[Math.max(0,r-1)]||"🪨"} ${r?RANGS[r-1]:"Mortel"}</span></div>
+      <div class="bar ol-bar" role="progressbar" aria-label="Badges de ${esc(sp.n)}" aria-valuenow="${n}" aria-valuemin="0" aria-valuemax="50"><i style="width:${n*2}%"></i></div>
+      <p class="hint" style="margin:4px 0 0">${n}/50 badges · rang ${r}/5${n===50?" · ⚡ SPORT COMPLET":""}</p>
+      ${blocs}</div>`;
+  }).join("")||`<p class="empty">Choisis tes sports dans Profil pour lancer ta quête.</p>`;
+  const dieux=DEITIES.map((d,i)=>{
+    const on=done>i;
+    return `<div class="ol-god${on?" on":""}" title="${on?esc(d.title)+" — "+esc(d.desc):"Finalise un sport pour réveiller ce dieu"}">${on?d.e:"🔒"}<small>${on?esc(d.n):"???"}</small></div>`;
+  }).join("");
+  $("scpantheon").innerHTML=`
+  <div class="ol-hero">
+    <div class="row"><div><h1 style="margin:0">🏛️ Panthéon</h1><p class="hint" style="margin:2px 0 0">Ton rang dans l'Olympe</p></div>
+      <div style="font-size:42px;line-height:1">${rang.e}</div></div>
+    <p style="margin:10px 0 2px"><b style="color:var(--ol-or);font-size:19px">${esc(rang.n)}</b> · ${esc(rang.title)}</p>
+    <p class="hint" style="margin:0">${done} sport${done>1?"s":""} finalisé${done>1?"s":""}${suivant&&done<DEITIES.length?" · Prochain : "+esc(suivant.n):""}</p>
+    <div class="bar ol-bar" style="margin-top:10px" role="progressbar" aria-label="Rang Olympe" aria-valuenow="${done}" aria-valuemin="0" aria-valuemax="${DEITIES.length}"><i style="width:${Math.round(done/DEITIES.length*100)}%"></i></div>
+    ${S.pantheonComplete?`<p style="margin:10px 0 0;color:var(--ol-or);font-weight:800">👑 PANTHÉON COMPLET — Roi des dieux</p>`:""}
+  </div>
+  <h2>Tes sports · badges & rangs</h2>
+  ${sportCards}
+  <div class="card ol-temple"><h2>Les dieux de l'Olympe</h2>
+    <p class="hint">Chaque sport finalisé (50/50) éveille un dieu, du plus humble au plus puissant.</p>
+    <div class="ol-gods">${dieux}</div></div>
+  <div class="card"><h2>💎 Défis gagnés</h2>
+    <p class="hint">${S.bx.length?S.bx.slice().reverse().map(b=>esc(b.n)).join(" · "):"Aucun défi gagné pour l'instant."}</p></div>`;
+}
 /* ===== Nutrition ===== */
 let nutD=today(),nutTab="assi";
 function addNut(label,qty,kcal,prot,gl,lip){(S.flog[nutD]=S.flog[nutD]||[]).push({k:label,q:qty,kcal,prot,gl,lip});
@@ -1422,6 +1340,8 @@ function renderCycle(){const C=S.cycle||{};
 
 /* ===== Profil ===== */
 function renderProfil(){const p=S.profile,g=S.goals;
+  const rankHtml=sportIds().map(id=>{const sp=sportOf(id),n=sportBadgeCount(id),r=sportRank(id);
+    return `<div class="row" style="padding:6px 0;border-top:1px solid var(--soft)"><div class="grow"><b>${sp.e} ${esc(sp.n)}</b><small class="hint" style="display:block">${n}/50 badges · rang ${r}/5</small></div><span class="ol-rank">${RANG_ICONS[Math.max(0,r-1)]||"🪨"} ${r?RANGS[r-1]:"Mortel"}</span></div>`}).join("");
   const bmi=p.h&&p.w?Math.round(p.w/Math.pow(p.h/100,2)*10)/10:0;
   $("scprofil").innerHTML=`
   <div class="row" style="margin-top:6px"><h1>Profil</h1><button class="chip" id="tt">${document.documentElement.dataset.theme==="dark"?"☀️":"🌙"}</button></div>
@@ -1452,15 +1372,6 @@ function renderProfil(){const p=S.profile,g=S.goals;
     <p class="hint" style="margin:8px 0 0">En surbrillance = raccourcis sur l'écran Aujourd'hui.</p>
     <button class="btn alt big" id="csNew" style="margin-top:10px">＋ Créer un sport</button>
   </div>
-  <div class="card"><h2>Niveaux par sport</h2>
-    <p class="hint">Niveau auto selon tes séances — ajuste-le à la main quand tu veux.</p>
-    <div>${(S.fav||[]).concat(S.acts.map(a=>a.s)).filter((x,i,t)=>t.indexOf(x)===i&&sportOf(x).id!=="autre").map(id=>{const sp=sportOf(id),man=S.lvl&&S.lvl[id]&&S.lvl[id].man;
-      return `<div class="row" style="padding:9px 0;border-top:1px solid var(--soft)">
-        <div class="grow"><b>${sp.e} ${esc(sp.n)}</b><small class="hint" style="display:block">${man?"réglé à la main":"auto ("+S.acts.filter(a=>a.s===id).length+" séance"+(S.acts.filter(a=>a.s===id).length>1?"s":"")+")"}</small></div>
-        <button class="del" data-nl="${id}" data-d="-1" aria-label="Niveau inférieur ${esc(sp.n)}">‹</button>
-        <b style="min-width:110px;text-align:center;font-size:13px">${NIV[lvlOf(id)-1]}</b>
-        <button class="del" data-nl="${id}" data-d="1" aria-label="Niveau supérieur ${esc(sp.n)}">›</button></div>`}).join("")||`<p class="empty">Choisis tes sports pour voir tes niveaux ici.</p>`}</div>
-  </div>
   <div class="card"><h2>Thème & couleur</h2>
     <p class="hint">Choisis un thème ou une couleur d'accent personnalisée.</p>
     <div class="chips" style="margin-top:6px">${Object.keys(ACCENTS).map(k=>{const lk=(k==="gold"&&!S.pantheonComplete);return `<button type="button" class="chip${(S.profile.accent||"lime")===k?" on":""}"${lk?' style="opacity:.4" disabled title="Débloque le Panthéon complet"':""} data-acc="${lk?"":k}">${lk?"🔒":ACCENTS[k].e} ${ACCENTS[k].n}</button>`}).join("")}</div>
@@ -1476,32 +1387,12 @@ function renderProfil(){const p=S.profile,g=S.goals;
       <input type="color" id="accCustom" value="${/^#[0-9a-f]{6}$/i.test(S.profile.accent||"")?S.profile.accent:"#ccff00"}" style="width:48px;height:44px;border:0;background:none;cursor:pointer">
     </div>
   </div>
-  <div class="card"><h2>Badges — ${S.badges.length+S.bx.length} gagnés</h2>
-    <div style="display:grid;gap:8px">${BADGES.map(b=>`<div class="bdg${S.badges.includes(b.id)?"":" off"}"><em>${b.e}</em><div class="grow"><b>${b.n}</b><small class="hint" style="display:block">${b.d}</small></div></div>`).join("")}</div>
-    
-    ${perfBadges().filter(b=>b.earned||true).length?`<p class="hint" style="margin:12px 0 4px">Badges de performance :</p>
-    <div style="display:grid;gap:8px">${perfBadges().map(b=>`<div class="bdg${b.earned?"":" off"}"><em>${b.e}</em><div class="grow"><b>${b.n}</b><small class="hint" style="display:block">${b.d}</small></div></div>`).join("")}</div>`:""}
+    <div class="card ol-temple"><h2>🏛️ Rangs par sport</h2>
+    <p class="hint">Un rang tous les 10 badges. 50 badges = rang Olympien.</p>
+    <div style="display:grid;gap:8px;margin-top:8px">${rankHtml}</div>
+    <button class="btn big" id="goPantheon" style="margin-top:12px">🏛️ Ouvrir le Panthéon</button>
   </div>
-  <div class="card"><h2>🏛️ Panthéon — ${((S.pantheon||[]).length)}/${(S.fav||[]).filter(x=>x!=="autre").length} dieux</h2>
-    <p class="hint">Finalise un sport (tous ses badges) pour débloquer sa divinité. Du moins puissant au plus puissant.</p>
-    <div style="display:grid;gap:8px;margin-top:10px">
-      ${DEITIES.map((d,i)=>{
-        const unlocked=(S.pantheon||[]).length>i;
-        const sportId=unlocked?(S.pantheon||[])[i]:null;
-        const sp=sportId?sportOf(sportId):null;
-        return `<div class="bdg${unlocked?"":" off"}" style="${unlocked?"border:1.5px solid var(--acc);background:var(--acc-soft)":""}">
-          <em style="font-size:24px">${unlocked?d.e:"🔒"}</em>
-          <div class="grow"><b>${unlocked?d.n:"???"}</b><small class="hint" style="display:block">${unlocked?d.title+" — "+(sp?sp.e+" "+esc(sp.n):""):"Finalise un sport pour débloquer"}</small></div>
-          ${unlocked?"<small class='hint'>✓</small>":""}
-        </div>`;
-      }).join("")}
-    </div>
-    ${S.pantheonComplete?`<div class="card" style="margin-top:12px;background:linear-gradient(135deg,var(--acc-soft),transparent);border:1.5px solid var(--acc)">
-      <div class="row"><em style="font-size:32px">⚡</em><div class="grow"><b style="color:var(--acc-text)">PANTHÉON COMPLET</b><small class="hint" style="display:block">Tu es devenu un Dieu du sport. Tous tes sports sont finalisés.</small></div><b style="color:var(--acc)">✓</b></div>
-    </div>`:""}
-  </div>
-
-  <div class="card"><h2>Sauvegarde</h2>
+<div class="card"><h2>Sauvegarde</h2>
     <p class="hint">Toutes tes données restent sur cet appareil. Exporte régulièrement pour ne rien perdre.</p>
     <button class="btn alt" id="expF">⬇️ Exporter dans un fichier</button>
     <button class="btn alt" id="expC" style="margin-top:8px">📋 Copier dans le presse-papiers</button>
@@ -1516,6 +1407,7 @@ function renderProfil(){const p=S.profile,g=S.goals;
   </div>
   <p class="hint" style="text-align:center;margin:14px 0 6px">Élan ⚡ — carnet sportif 100 % privé, hors ligne.<br>Muscu · Course · Vélo · Natation · Padel · et tout ce que tu inventes.</p>`;
   $("tt").onclick=toggleTheme;
+  $("goPantheon").onclick=()=>setScreen("pantheon");
   $("pOk").onclick=()=>{const age=+$("pAge").value,h=+$("pH").value,w=+$("pW").value;
     if(!((age>=10&&age<=99)||!age)||!(!h||(h>=120&&h<=230))||!(!w||(w>=30&&w<=250))){toast("⚠️ Valeurs peu réalistes");return}
     S.profile.age=age||S.profile.age;S.profile.h=h||S.profile.h;S.profile.sexe=$("pSex").value;
@@ -1523,8 +1415,6 @@ function renderProfil(){const p=S.profile,g=S.goals;
       if(last&&last.d===today())last.kg=w;else S.wlog.push({d:today(),kg:w});
       S.wlog.sort((a,b)=>a.d.localeCompare(b.d))}
     save();toast("✅ Profil mis à jour");renderAll()};
-  document.querySelectorAll("[data-nl]").forEach(b=>b.onclick=()=>{const id=b.dataset.nl;
-    lvlSet(id,lvlOf(id)+ +b.dataset.d);renderProfil()});
   document.querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{if(!b.dataset.acc||(b.dataset.acc==="gold"&&!S.pantheonComplete))return;applyAccent(b.dataset.acc);renderProfil()});
   document.querySelectorAll("[data-duo]").forEach(b=>b.onclick=()=>{applyDuo(b.dataset.duo);renderProfil()});
   const ac=$("accCustom");if(ac)ac.onchange=()=>{applyAccent(ac.value);renderProfil()}
