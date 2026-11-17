@@ -6,11 +6,11 @@ Version 3, reconstruite de zéro. Remplace « Suivi salle » (v1 dans `ilane`, v
 
 ## Écrans
 
-- ⚡ **Aujourd'hui** : streak 🔥 + 7 derniers jours, **carte Objectifs** à gros chiffres (séances de la semaine en héros, statut du jour, restantes, objectif principal, bouton ✏️ vers Profil), 🎯 **défi du jour** (rotation quotidienne, « Fait ✓ » ou auto-détection), humeur du jour (5 émojis), raccourcis de tes sports favoris **avec ton rang affiché**, gros bouton « ＋ Nouvelle activité », dernières activités
+- ⚡ **Aujourd'hui** : streak 🔥 + 7 derniers jours (bouton **😴 Jour de repos** : le jour compte comme objectif atteint et garde la streak), **carte Objectifs** à gros chiffres (**objectif du jour = 1 séance**, statut hebdo en secondaire, objectif principal, bouton ✏️ vers Profil), 🎯 **défi du jour** (bouton **✓ Valider** manuel même pour les défis auto), humeur du jour (5 émojis), raccourcis de tes sports favoris **avec ton rang affiché**, gros bouton « ＋ Nouvelle activité », dernières activités
 - 🏋️ **Muscu & Street workout** : exercices **pré-enregistrés** (machines/exos courants + tes historiques), séries kg/rép, détection auto des records
 - 🏃 **Tous les sports** (course, vélo, natation, padel, 🏐 volley, escalade, rando, foot, HIIT, maison, + sports custom) : séance avec durée, distance, exercices minutés (total auto) et note
 - ⭐ **Avis sur la séance** : à chaque enregistrement, note de 1 à 5 étoiles
-- 🎯 **Défis** : défi du jour (10 défis généraux auto ou manuels + défis quotidiens par sport) + défi par sport (2 séances/semaine) → 💎
+- 🎯 **Défis** : défi du jour (10 défis généraux + défis quotidiens par sport, validable manuellement) + défi par sport (2 séances/semaine) → 💎
 - 📈 **Progrès** : heatmap 16 semaines, minutes/semaine, répartition par sport, **⚖️ Mon poids** (pesée + courbe), **💪 Charges à la salle** (courbe par exercice)
 - 🍽️ **Nutrition** : calculateur Mifflin-St Jeor + 3 modes (🥘 assiettes-types, 🍽️ plats pesés en g ou en assiettes, ⌨️ direct) + eau 💧
 - 🏋️ **Exos** : échauffement, exercices guidés et étirements par sport favori (cochables par jour)
@@ -27,7 +27,7 @@ Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** r�
 1. Tout dans `index.html` — pas de fichiers CSS/JS séparés, zéro dépendance
 2. Zéro backend, données en localStorage (`el-v1:<compte>`), comptes dans `sg-accounts`
 3. Toute nouvelle couleur a sa déclinaison light **et** dark dans les blocs de tokens
-4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v21`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
+4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v22`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
 5. Cibles tactiles ≥ 44 px
 6. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"` (géré dans `renderAll` + handler `pOk`)
 

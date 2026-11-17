@@ -251,14 +251,14 @@ function kcalOf(a){const w=(S.profile.w||70),sp=sportOf(a.s);
   const min=a.met.min||((a.met.km||0)*(sp.id==="velo"?4:10));return Math.round((sp.met||6)*w/60*(min||30))}
 
 /* ===== État ===== */
-function fresh(){return{profile:{},goals:{ses:3,min:180,kcal:2000,prot:100,eau:8},sports:[],acts:[],sets:[],flog:{},eau:{},cycle:null,badges:[],seen:[]}}
+function fresh(){return{profile:{},goals:{ses:3,min:180,kcal:2000,prot:100,eau:8},sports:[],acts:[],sets:[],flog:{},eau:{},rest:{},cycle:null,badges:[],seen:[]}}
 function save(){localStorage.setItem("el-v1:"+NAME,JSON.stringify(S))}
 function loadS(){S=Object.assign(fresh(),J("el-v1:"+NAME,true)||{});S.goals=Object.assign({ses:3,min:180,kcal:2000,prot:100,eau:8},S.goals);
   /* Sanitation : sports = objets uniquement (protection des vieilles données) */
   S.sports=(S.sports||[]).filter(x=>x&&typeof x==="object"&&x.id);
   S.fav=(S.fav||[]).filter(x=>typeof x==="string"&&sportOf(x));
   S.acts=(S.acts||[]).filter(a=>a&&a.id&&sportOf(a.s));
-  S.dishes=S.dishes||{};S.lvl=S.lvl||{};S.mood=S.mood||{};S.chal=S.chal||{};S.spchal=S.spchal||{};S.wlog=S.wlog||[];S.bx=S.bx||[];
+  S.dishes=S.dishes||{};S.lvl=S.lvl||{};S.mood=S.mood||{};S.chal=S.chal||{};S.spchal=S.spchal||{};S.wlog=S.wlog||[];S.bx=S.bx||[];S.rest=S.rest||{};
   if(!S.badgeV2){S.badges=[];S.pantheon=[];S.pantheonComplete=false;S.lvl={};S.badgeV2=true;save()}}
 /* Migration depuis l'ancienne app "Suivi salle" */
 function migrate(){const O=J("suivi-salle-v1:"+NAME,true);if(!O)return;
@@ -283,7 +283,9 @@ function migrate(){const O=J("suivi-salle-v1:"+NAME,true);if(!O)return;
 
 /* ===== Streak & badges ===== */
 function activeDays(){return new Set(S.acts.map(a=>a.d))}
-function streak(){const A=activeDays();let d=today();if(!A.has(d)){d=new Date(Date.parse(today()+"T00:00:00Z")-DAYMS).toISOString().slice(0,10);if(!A.has(d))return 0}
+function goalDays(){const A=activeDays();Object.keys(S.rest||{}).forEach(d=>{if(S.rest[d])A.add(d)});return A}
+function toggleRest(){S.rest=S.rest||{};if(S.rest[today()])delete S.rest[today()];else S.rest[today()]=true;save();renderToday()}
+function streak(){const A=goalDays();let d=today();if(!A.has(d)){d=new Date(Date.parse(today()+"T00:00:00Z")-DAYMS).toISOString().slice(0,10);if(!A.has(d))return 0}
   let n=0;while(A.has(d)){n++;d=new Date(Date.parse(d+"T00:00:00Z")-DAYMS).toISOString().slice(0,10)}return n}
 /* ===== Badges & Rangs — Panthéon de l'Olympe ===== */
 const RANGS=["Éphèbe","Guerrier","Héros","Demi-dieu","Olympien"];
@@ -701,9 +703,9 @@ function weekAct(){const m=monday();return S.acts.filter(a=>a.d>=m)}
 function minOf(a){if(a.s==="muscu")return (S.sets.filter(x=>x.a===a.id||(!x.a&&x.d===a.d)).length)*3;return Math.round(a.met.min||((a.met.km||0)*(a.s==="velo"?4:10)))}
 function renderToday(){const d=new Date(),A=weekAct(),st=streak();
   const ses=A.length;
-  const T=S.acts.filter(a=>a.d===today());
-  const wd=["L","M","M","J","V","S","D"],m=monday();
-  const dots=wd.map((l,i)=>{const dd=ziso(dn(m)+i);return `<span>${l}<i class="${activeDays().has(dd)?"on":""}"></i></span>`}).join("");
+  const T=S.acts.filter(a=>a.d===today()),isRest=!!(S.rest||{})[today()];
+  const wd=["L","M","M","J","V","S","D"],m=monday(),gd=goalDays();
+  const dots=wd.map((l,i)=>{const dd=ziso(dn(m)+i);return `<span>${l}<i class="${gd.has(dd)?"on":""}"></i></span>`}).join("");
   const recent=S.acts.slice().sort((a,b)=>b.t-a.t||b.d.localeCompare(a.d)).slice(0,3);
   const nb=S.badges.length+S.bx.length;
   const c=chalOf(today()),cs=chalState(today());
@@ -717,21 +719,22 @@ function renderToday(){const d=new Date(),A=weekAct(),st=streak();
   <div class="card">
     <div class="row">
       <div><div class="num">🔥 ${st}</div><p class="hint" style="margin:4px 0 0">${st>1?"jours d'affilée":"jour d'affilée — continue !"}</p></div>
-      <div class="wd" style="width:170px" aria-label="Activité des 7 derniers jours">${dots}</div>
+      <div class="wd" style="width:170px" aria-label="Objectifs des 7 derniers jours">${dots}</div>
     </div>
+    <button class="chip${isRest?" on":""}" id="restBtn" style="margin-top:8px;min-height:38px;padding:6px 10px;font-size:12px">${isRest?"😴 Repos activé — clique pour annuler":"😴 Marquer jour de repos"}</button>
   </div>
   <div class="card">
     <div class="row" style="margin-bottom:6px"><h2 style="margin:0">Objectifs</h2>
       <button class="chip" id="editGoals" style="min-height:38px;padding:6px 10px;font-size:12px">✏️ Modifier</button></div>
     <p class="hint" style="margin:0 0 10px">Objectif principal : <b>${esc((PRIMARY_GOALS.find(g=>g.id===(S.profile.goal||"forme"))||PRIMARY_GOALS[0]).n)}</b></p>
     <div class="card" style="padding:16px;text-align:center">
-      <div class="num" style="font-size:52px">${ses}<small> / ${S.goals.ses}</small></div>
-      <p class="hint" style="margin:6px 0 8px">séances cette semaine</p>
-      <div class="bar" role="progressbar" aria-label="Séances cette semaine" aria-valuenow="${Math.min(100,Math.round(ses/Math.max(1,S.goals.ses)*100))}" aria-valuemin="0" aria-valuemax="100"><i style="width:${Math.min(100,Math.round(ses/Math.max(1,S.goals.ses)*100))}%"></i></div>
+      <div class="num" style="font-size:52px">${isRest?"😴":T.length+"<small> / 1</small>"}</div>
+      <p class="hint" style="margin:6px 0 8px">${isRest?"jour de repos — objectif atteint":"séances aujourd'hui"}</p>
+      <div class="bar" role="progressbar" aria-label="Objectif du jour" aria-valuenow="${isRest?100:Math.min(100,T.length*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${isRest?100:Math.min(100,T.length*100)}%"></i></div>
     </div>
     <div class="kpi" style="margin-top:10px">
-      <div class="card" style="padding:12px;text-align:center"><div class="num" style="font-size:30px">${T.length}</div>
-        <p class="hint" style="margin:4px 0 0">aujourd'hui · ${T.length?"⚡ fait":"🕐 à venir"}</p></div>
+      <div class="card" style="padding:12px;text-align:center"><div class="num" style="font-size:30px">${ses} / ${S.goals.ses}</div>
+        <p class="hint" style="margin:4px 0 0">séances cette semaine</p></div>
       <div class="card" style="padding:12px;text-align:center"><div class="num" style="font-size:30px">${Math.max(0,S.goals.ses-ses)}</div>
         <p class="hint" style="margin:4px 0 0">restantes cette semaine</p></div>
     </div>
@@ -739,7 +742,7 @@ function renderToday(){const d=new Date(),A=weekAct(),st=streak();
   <div class="card">
     <h2>Défi du jour</h2>
     <div class="row"><em style="font-style:normal;font-size:26px">${c.e}</em><div class="grow"><b>${c.n}</b><small class="hint" style="display:block">${c.d}</small></div>
-      ${cs.done?`<b style="color:var(--good)">✓</b>`:c.auto?`<small class="hint">en cours…</small>`:`<button class="btn" id="chalOk" style="min-height:44px;padding:8px 14px">Fait ✓</button>`}</div>
+      ${cs.done?`<b style="color:var(--good)">✓ Validé</b>`:`<button class="btn" id="chalOk" style="min-height:44px;padding:8px 14px">✓ Valider</button>`}</div>
   </div>
   <div class="card">
     <h2>Humeur du jour</h2>
@@ -759,6 +762,7 @@ function renderToday(){const d=new Date(),A=weekAct(),st=streak();
   $("tt").onclick=toggleTheme;
   $("newAct").onclick=sportPicker;
   $("editGoals").onclick=()=>setScreen("profil");
+  $("restBtn").onclick=toggleRest;
   document.querySelectorAll("[data-qs]").forEach(b=>b.onclick=()=>openActForm(b.dataset.qs));
   document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Supprimer cette activité ?"))return;
     const id=b.dataset.del;const a=S.acts.find(x=>x.id===id);S.acts=S.acts.filter(x=>x.id!==id);
