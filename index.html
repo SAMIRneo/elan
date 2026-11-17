@@ -251,14 +251,14 @@ function kcalOf(a){const w=(S.profile.w||70),sp=sportOf(a.s);
   const min=a.met.min||((a.met.km||0)*(sp.id==="velo"?4:10));return Math.round((sp.met||6)*w/60*(min||30))}
 
 /* ===== État ===== */
-function fresh(){return{profile:{},goals:{ses:3,min:180,kcal:2000,prot:100,eau:8},sports:[],acts:[],sets:[],flog:{},eau:{},rest:{},cycle:null,badges:[],seen:[]}}
+function fresh(){return{profile:{},goals:{ses:3,min:180,kcal:2000,prot:100,eau:8},sports:[],acts:[],sets:[],flog:{},eau:{},rest:{},exlogs:[],customEx:{},cycle:null,badges:[],seen:[]}}
 function save(){localStorage.setItem("el-v1:"+NAME,JSON.stringify(S))}
 function loadS(){S=Object.assign(fresh(),J("el-v1:"+NAME,true)||{});S.goals=Object.assign({ses:3,min:180,kcal:2000,prot:100,eau:8},S.goals);
   /* Sanitation : sports = objets uniquement (protection des vieilles données) */
   S.sports=(S.sports||[]).filter(x=>x&&typeof x==="object"&&x.id);
   S.fav=(S.fav||[]).filter(x=>typeof x==="string"&&sportOf(x));
   S.acts=(S.acts||[]).filter(a=>a&&a.id&&sportOf(a.s));
-  S.dishes=S.dishes||{};S.lvl=S.lvl||{};S.mood=S.mood||{};S.chal=S.chal||{};S.spchal=S.spchal||{};S.wlog=S.wlog||[];S.bx=S.bx||[];S.rest=S.rest||{};
+  S.dishes=S.dishes||{};S.lvl=S.lvl||{};S.mood=S.mood||{};S.chal=S.chal||{};S.spchal=S.spchal||{};S.wlog=S.wlog||[];S.bx=S.bx||[];S.rest=S.rest||{};S.exlogs=S.exlogs||[];S.customEx=S.customEx||{};if(!S.exoV2){S.sets=[];S.exoV2=true;save()}
   if(!S.badgeV2){S.badges=[];S.pantheon=[];S.pantheonComplete=false;S.lvl={};S.badgeV2=true;save()}}
 /* Migration depuis l'ancienne app "Suivi salle" */
 function migrate(){const O=J("suivi-salle-v1:"+NAME,true);if(!O)return;
@@ -803,7 +803,7 @@ function openActForm(sid){if(sid==="other")return sportPicker();
     $("acC").onclick=closeSheet;
     $("acOk").onclick=()=>{if(!tmpSets.length){toast("⚠️ Ajoute au moins une série");return}
       const d=tmpSets[0].d,a={id:uid(),d,s:"muscu",met:{n:tmpSets.length},t:Date.now()};
-      let pr=false;tmpSets.forEach(x=>{const best=S.sets.filter(y=>y.m===x.m).reduce((a,y)=>Math.max(a,y.w),0);if(x.w>best)pr=true;S.sets.push({id:uid(),a:a.id,d,m:x.m,w:x.w,r:x.r})});
+      let pr=false;tmpSets.forEach(x=>{const best=S.sets.filter(y=>y.m===x.m).reduce((a,y)=>Math.max(a,y.w),0);if(x.w>best)pr=true;S.sets.push({id:uid(),a:a.id,d,m:x.m,w:x.w,r:x.r});S.exlogs=(S.exlogs||[]);S.exlogs.push({id:uid(),d,sport:"muscu",ex:"m:"+x.m,cat:"main",e:"🏋️",n:x.m,kg:x.w,reps:x.r,sets:1,sec:0,km:0,note:"",v:null,t:Date.now()})});
       S.acts.push(a);if(pr)S.prEver=true;ensureSport("muscu");save();closeSheet();renderAll();checkBadges();
       toast(pr?"💪 Séance enregistrée — nouveau record au passage !":"✅ Séance enregistrée : "+tmpSets.length+" séries",pr);
       rateSheet(a);return}
@@ -852,9 +852,6 @@ function renderProgres(){const da=activeDays();
   const weeks=[];for(let w=7;w>=0;w--){let t=0;S.acts.forEach(a=>{const dd=dn(a.d);if(dd<=dn(m)-7*w&&dd>dn(m)-7*w-7)t+=minOf(a)});weeks.push(t)}
   const mx=Math.max(...weeks,60);
   const bars=weeks.map((v,i)=>`<div style="flex:1;text-align:center"><div title="${v} min" style="height:${Math.max(4,Math.round(v/mx*96))}px;background:var(--acc);border-radius:6px;opacity:${v?1:.15};margin:0 auto"></div><small class="hint">${v>=60?Math.round(v/60)+"h":v}</small></div>`).join("");
-  /* records muscu */
-  const rec={};S.sets.forEach(x=>{if(x.w>(rec[x.m]||{w:0}).w)rec[x.m]={w:x.w,d:x.d}});
-  const recList=Object.keys(rec).sort().map(mm=>`<li style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--soft)"><span><b>${esc(mm)}</b><small class="hint" style="display:block">record du ${fd(rec[mm].d)}</small></span><b>${fn(rec[mm].w)} kg</b></li>`).join("");
   /* par sport ce mois */
   const d30=ziso(dn(today())-30),byS={};S.acts.filter(a=>a.d>=d30).forEach(a=>byS[a.s]=(byS[a.s]||0)+minOf(a));
   const sportRows=Object.keys(byS).sort((a,b)=>byS[b]-byS[a]).map(id=>{const s=sportOf(id);return `<div style="margin:8px 0"><div class="row"><span>${s.e} <b>${esc(s.n)}</b></span><small class="hint">${hh(byS[id])}</small></div><div class="bar"><i style="width:${Math.min(100,Math.round(byS[id]/Math.max(...Object.values(byS))*100))}%"></i></div></div>`}).join("");
@@ -867,20 +864,45 @@ function renderProgres(){const da=activeDays();
   <div class="card"><h2>⚖️ Mon poids</h2>
     ${S.wlog.length?`<p class="hint" style="margin-bottom:6px">Dernière pesée : <b>${fn(S.wlog[S.wlog.length-1].kg)} kg</b> le ${fd(S.wlog[S.wlog.length-1].d)}</p>${svgLine(S.wlog.map(x=>({y:x.kg})))}`:`<p class="empty">Pesée-toi pour suivre ton évolution.</p>`}
     <div class="row" style="gap:6px;margin-top:8px"><div class="grow"><input id="wIn" type="number" min="30" max="250" step="0.1" inputmode="decimal" placeholder="Poids du jour (kg)" aria-label="Poids du jour en kg"></div><button class="btn" id="wOk" style="min-height:48px;padding:8px 16px">Peser</button></div></div>
-  ${recList?`<div class="card"><h2>💪 Charges à la salle</h2>
-    <select id="rcSel" aria-label="Choisir un exercice">${Object.keys(rec).sort().map(mm=>`<option value="${esc(mm)}">${esc(mm)} — record ${fn(rec[mm].w)} kg</option>`).join("")}</select>
-    <div id="rcChart" style="margin-top:10px"></div>
-    <ul style="list-style:none;margin:10px 0 0;padding:0">${recList}</ul></div>`:""}
-  ${sportRows?`<div class="card"><h2>Répartition — 30 jours</h2>${sportRows}</div>`:""}
+  ${progressCard()}
+    ${sportRows?`<div class="card"><h2>Répartition — 30 jours</h2>${sportRows}</div>`:""}
   `;
 
-    if(recList){const chart=()=>{const mm=$("rcSel").value;
-      const byDay={};S.sets.filter(x=>x.m===mm&&x.w>0).forEach(x=>byDay[x.d]=Math.max(byDay[x.d]||0,x.w));
-      const pts=Object.keys(byDay).sort().map(d=>({d,y:byDay[d]}));
-      $("rcChart").innerHTML=svgLine(pts,70,"séances")+(pts.length>1?`<p class="hint" style="margin-top:4px">${fn(pts[0].y)} kg → ${fn(pts[pts.length-1].y)} kg depuis ${fd(pts[0].d)}</p>`:"")};
-    $("rcSel").onchange=chart;chart()}}
+  bindProgress()}
 
-
+/* ===== Progression des exercices ===== */
+let pgSport=null,pgEx=null,pgMes="kg";
+const PG_MES=[["kg","Poids (kg)"],["reps","Répétitions"],["sec","Temps (s)"],["v","Vitesse (km/h)"],["km","Distance (km)"],["sets","Séries"]];
+function progressCard(){
+  const sports=sportIds().filter(id=>id&&id!=="autre");
+  if(!sports.length)return "";
+  if(!pgSport||!sports.includes(pgSport))pgSport=sports[0];
+  const all=[];
+  EX_CATS.forEach(([cat])=>exListFor(pgSport,cat).forEach(x=>{if(!all.some(y=>y.id===x.id))all.push(x)}));
+  (S.exlogs||[]).filter(x=>x.sport===pgSport).forEach(x=>{if(!all.some(y=>y.id===x.ex))all.push({id:x.ex,e:x.e||"🏋️",n:x.n||x.ex})});
+  if(!all.length)return `<div class="card ol-temple"><h2>📈 Progression exercice</h2><p class="empty">Aucun exercice pour ce sport.</p></div>`;
+  if(!pgEx||!all.some(x=>x.id===pgEx))pgEx=all[0].id;
+  const label=(PG_MES.find(m=>m[0]===pgMes)||PG_MES[0])[1];
+  const logs=(S.exlogs||[]).filter(x=>x.sport===pgSport&&x.ex===pgEx&&(x[pgMes]||0)>0)
+    .sort((a,b)=>a.d.localeCompare(b.d)||(a.t||0)-(b.t||0));
+  const pts=logs.map(x=>({d:x.d,y:x[pgMes]}));
+  const best=pts.length?Math.max(...pts.map(p=>p.y)):0,last=pts.length?pts[pts.length-1].y:0;
+  return `<div class="card ol-temple"><h2>📈 Progression exercice</h2>
+   <div class="kpi" style="margin-top:6px">
+     <div><label class="lbl">Sport</label><select id="pgSport">${sports.map(id=>`<option value="${id}"${id===pgSport?" selected":""}>${sportOf(id).e} ${esc(sportOf(id).n)}</option>`).join("")}</select></div>
+     <div><label class="lbl">Exercice</label><select id="pgEx">${all.map(x=>`<option value="${esc(x.id)}"${x.id===pgEx?" selected":""}>${x.e} ${esc(x.n)}</option>`).join("")}</select></div>
+     <div><label class="lbl">Mesure</label><select id="pgMes">${PG_MES.map(([k,n])=>`<option value="${k}"${k===pgMes?" selected":""}>${n}</option>`).join("")}</select></div>
+   </div>
+   <div style="margin-top:10px">${svgLine(pts,70,label)}</div>
+   <p class="hint" style="margin-top:4px">${pts.length?`Record : <b>${fn(best)}</b> · Dernier : <b>${fn(last)}</b> · ${pts.length} mesure${pts.length>1?"s":""}`:`Aucune mesure « ${label} » pour cet exercice.`}</p>
+  </div>`;
+}
+function bindProgress(){
+  if(!$("pgSport"))return;
+  $("pgSport").onchange=e=>{pgSport=e.target.value;pgEx=null;renderProgres()};
+  $("pgEx").onchange=e=>{pgEx=e.target.value;renderProgres()};
+  $("pgMes").onchange=e=>{pgMes=e.target.value;renderProgres()};
+}
 /* ===== Panthéon (Olympe) ===== */
 function renderPantheon(){
   const ids=sportIds(),done=(S.pantheon||[]).length;
@@ -1225,32 +1247,92 @@ function exDoneKey(){return "exdone-"+today()}
 function getExDone(){return JSON.parse(localStorage.getItem(exDoneKey())||"{}")}
 function setExDone(o){localStorage.setItem(exDoneKey(),JSON.stringify(o))}
 
-/* renderExos function */
+/* ===== Carnet d'exercices : mesures par sport/exo ===== */
+const EX_CATS=[["warmup","Échauffement"],["main","Exercices"],["stretch","Étirements"]];
+function customEx(){S.customEx=S.customEx||{};return S.customEx}
+function exListFor(sport,cat){const base=(EXOS[sport]&&EXOS[sport][cat])||[];
+  const custom=(customEx()[sport]||[]).filter(x=>x.cat===cat).map(x=>Object.assign({},x,{custom:true}));
+  const fromLogs=(S.exlogs||[]).filter(x=>x.sport===sport&&x.cat===cat&&x.ex&&x.ex.indexOf("m:")===0)
+    .map(x=>({id:x.ex,e:x.e||"🏋️",n:x.n||x.ex,reps:"Mesure libre",d:"Exercice enregistré"}));
+  const seen=new Set();return base.concat(custom,fromLogs).filter(x=>{if(seen.has(x.id))return false;seen.add(x.id);return true})}
+function parseTime(s){const m=String(s||"").trim().match(/^(\d+)(?::(\d{1,2}))?$/);if(!m)return 0;
+  const ss=+m[2]||0;return ss<60?(+m[1])*60+ss:0}
+function speedOf(km,sec){return km>0&&sec>0?Math.round(km/(sec/3600)*10)/10:null}
 let exSport=null;
 function renderExos(){
-  const favs=(S.fav&&S.fav.length)?S.fav:["muscu","course"];
+  const list=sportIds(),favs=list.length?list:["muscu","course"];
   if(!exSport||!favs.includes(exSport))exSport=favs[0];
-  const done=getExDone();
-  const section=(title,items,cls)=>items.length?`<div class="card"><h2>${title}</h2><div style="display:grid;gap:8px;margin-top:6px">${items.map(x=>{
+  const done=getExDone(),id=exSport,sp=sportOf(id);
+  const section=(title,items,cat)=>items.length?`<div class="card"><h2>${title}</h2><div style="display:grid;gap:8px;margin-top:6px">${items.map(x=>{
     const key=x.id,isDone=!!done[key];
-    return `<div class="act" style="align-items:flex-start">
+    return `<div class="act" style="align-items:flex-start;flex-wrap:wrap">
       <div class="sico" style="font-size:22px">${x.e}</div>
-      <div class="grow">
-        <div class="row" style="padding:0"><b>${esc(x.n)}</b><small class="hint">${esc(x.reps)}</small></div>
-        <small class="hint" style="display:block;margin-top:2px">${esc(x.d)}</small>
-      </div>
-      <button type="button" class="chip${isDone?" on":""}" data-ex="${key}" style="min-height:40px;padding:6px 10px;font-size:12px">${isDone?"✓ Fait":"À faire"}</button>
-    </div>`}).join("")}</div>`:"";
-  const id=exSport;const sp=sportOf(id);const E=EXOS[id]||{warmup:[],main:[],stretch:[]};
+      <div class="grow"><div class="row" style="padding:0"><b>${esc(x.n)}</b><small class="hint">${esc(x.reps||"")}</small></div>
+        <small class="hint" style="display:block;margin-top:2px">${esc(x.d||"")}</small></div>
+      <div class="chips" style="width:100%">
+        <button type="button" class="chip${isDone?" on":""}" data-ex="${esc(key)}" data-cat="${cat}" style="min-height:40px;padding:6px 10px;font-size:12px">${isDone?"✓ Fait":"À faire"}</button>
+        <button type="button" class="chip" data-measure="${esc(key)}" data-cat="${cat}" style="min-height:40px;padding:6px 10px;font-size:12px">📊 Mesurer</button>
+        ${x.custom?`<button type="button" class="chip" data-exedit="${esc(key)}" style="min-height:40px;padding:6px 10px;font-size:12px">✏️</button>
+        <button type="button" class="chip" data-exdel="${esc(key)}" style="min-height:40px;padding:6px 10px;font-size:12px">🗑️</button>`:""}
+      </div></div>`}).join("")}</div>`:"";
   $("scexos").innerHTML=`
-  <h1>Exercices</h1><p class="hint">Échauffement, exercices et étirements pour tes sports. Clique sur un sport pour voir ses exercices.</p>
+  <h1>Exercices</h1><p class="hint">Mesure tes exercices (kg, reps, temps, distance…) et retrouve ta courbe dans Progrès.</p>
   <div class="chips" style="margin-bottom:12px">${favs.map(x=>{const s=sportOf(x);return `<button type="button" class="chip${x===exSport?" on":""}" data-exsport="${x}">${s.e} ${esc(s.n)}</button>`}).join("")}</div>
-  <h2 style="margin:6px 0">${sp.e} ${esc(sp.n)}</h2>
-  ${section("🔥 Échauffement",E.warmup||[])}
-  ${section("💪 Exercices",E.main||[])}
-  ${section("🧘 Étirements",E.stretch||[])}`;
-  document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>{const o=getExDone();const k=b.dataset.ex;if(o[k])delete o[k];else o[k]=1;setExDone(o);renderExos()});
-  document.querySelectorAll("[data-exsport]").forEach(b=>b.onclick=()=>{exSport=b.dataset.exsport;renderExos()})}
+  <div class="row" style="margin-bottom:10px"><h2 style="margin:0">${sp.e} ${esc(sp.n)}</h2>
+    <button type="button" class="chip" id="addEx" style="min-height:40px;padding:6px 10px;font-size:12px">＋ Exercice</button></div>
+  ${section("🔥 Échauffement",exListFor(id,"warmup"),"warmup")}
+  ${section("💪 Exercices",exListFor(id,"main"),"main")}
+  ${section("🧘 Étirements",exListFor(id,"stretch"),"stretch")}`;
+  document.querySelectorAll("[data-ex]").forEach(b=>b.onclick=()=>{const o=getExDone(),k=b.dataset.ex;if(o[k])delete o[k];else o[k]=1;setExDone(o);renderExos()});
+  document.querySelectorAll("[data-exsport]").forEach(b=>b.onclick=()=>{exSport=b.dataset.exsport;renderExos()});
+  document.querySelectorAll("[data-measure]").forEach(b=>b.onclick=()=>openExLog(exSport,b.dataset.measure,b.dataset.cat));
+  document.querySelectorAll("[data-exedit]").forEach(b=>b.onclick=()=>openExForm(exSport,b.dataset.exedit));
+  document.querySelectorAll("[data-exdel]").forEach(b=>b.onclick=()=>{if(!confirm("Supprimer cet exercice ?"))return;
+    const c=customEx();c[exSport]=(c[exSport]||[]).filter(x=>x.id!==b.dataset.exdel);save();renderExos();toast("🗑️ Exercice supprimé")});
+  $("addEx").onclick=()=>openExForm(exSport)}
+function openExLog(sport,exId,cat){
+  const def=exListFor(sport,cat).find(x=>x.id===exId);if(!def)return;
+  openSheet(`<h3>📊 ${def.e} ${esc(def.n)}</h3>
+   <p class="hint">${esc(sportOf(sport).n)} · mesure du ${fd(today())}</p>
+   <div class="kpi"><div><label class="lbl">Poids (kg)</label><input id="lxKg" type="number" min="0" step="0.5" inputmode="decimal" placeholder="50"></div>
+     <div><label class="lbl">Répétitions</label><input id="lxRep" type="number" min="0" inputmode="numeric" placeholder="10"></div>
+     <div><label class="lbl">Séries</label><input id="lxSet" type="number" min="0" inputmode="numeric" placeholder="3"></div></div>
+   <div class="kpi" style="margin-top:4px"><div><label class="lbl">Temps (mm:ss)</label><input id="lxTime" placeholder="24:30" inputmode="numeric"></div>
+     <div><label class="lbl">Distance (km)</label><input id="lxKm" type="number" min="0" step="0.01" inputmode="decimal" placeholder="5"></div></div>
+   <p class="hint" id="lxSpeed" style="margin-top:8px">Vitesse : —</p>
+   <label class="lbl">Note (optionnel)</label><input id="lxNote" maxlength="80">
+   <div class="row" style="margin-top:14px"><button class="btn alt" id="lxC">Annuler</button><button class="btn" id="lxOk">Enregistrer</button></div>`);
+  const calc=()=>{const sec=parseTime($("lxTime").value),km=parseFloat($("lxKm").value)||0,v=speedOf(km,sec);
+    $("lxSpeed").textContent=v!==null?`Vitesse : ${fn(v)} km/h · ${sec} s pour ${fn(km)} km`:"Vitesse : —"};
+  $("lxTime").oninput=calc;$("lxKm").oninput=calc;calc();
+  $("lxC").onclick=closeSheet;
+  $("lxOk").onclick=()=>{
+    const kg=parseFloat($("lxKg").value)||0,reps=parseInt($("lxRep").value,10)||0,sets=parseInt($("lxSet").value,10)||0;
+    const sec=parseTime($("lxTime").value),km=parseFloat($("lxKm").value)||0,v=speedOf(km,sec),note=$("lxNote").value.trim();
+    if(!(kg||reps||sets||sec||km)){toast("⚠️ Indique au moins une mesure");return}
+    S.exlogs=S.exlogs||[];
+    S.exlogs.push({id:uid(),d:today(),sport,ex:exId,cat,e:def.e,n:def.n,kg,reps,sets:sets||1,sec,km,note,v,t:Date.now()});
+    const min=sec?Math.max(1,Math.round(sec/60)):1;
+    S.acts.push({id:uid(),d:today(),s:sport,met:{min,ex:[{n:def.n,min:sec?Math.round(sec/60):0}],note:note||undefined},t:Date.now()});
+    ensureSport(sport);save();closeSheet();renderExos();checkBadges();
+    toast("✅ Mesure enregistrée — visible dans Progrès")};
+}
+function openExForm(sport,id){
+  const list=customEx()[sport]||[],cur=id?list.find(x=>x.id===id):null;
+  openSheet(`<h3>${cur?"Modifier":"Créer"} un exercice</h3>
+   <label class="lbl">Nom</label><input id="exfN" maxlength="40" value="${cur?esc(cur.n):""}" placeholder="Ex. Rowing haltère">
+   <label class="lbl">Icône</label><div class="chips" id="exfE">${["💪","🏋️","🤸","🏃","🚴","🏊","🎾","🧘","⚡","✨"].map(e=>`<button type="button" class="chip${cur&&cur.e===e?" on":""}" data-e="${e}">${e}</button>`).join("")}</div>
+   <label class="lbl">Catégorie</label><select id="exfC">${EX_CATS.map(([k,n])=>`<option value="${k}"${cur&&cur.cat===k?" selected":""}>${n}</option>`).join("")}</select>
+   <div class="row" style="margin-top:14px"><button class="btn alt" id="exfCanc">Annuler</button><button class="btn" id="exfOk">${cur?"Enregistrer":"Créer"}</button></div>`);
+  let em=cur?cur.e:"💪";
+  document.querySelectorAll("#exfE button").forEach(b=>b.onclick=()=>{em=b.dataset.e;document.querySelectorAll("#exfE button").forEach(x=>x.classList.toggle("on",x===b))});
+  $("exfCanc").onclick=closeSheet;
+  $("exfOk").onclick=()=>{const n=$("exfN").value.trim();if(!n){toast("⚠️ Donne un nom à l'exercice");return}
+    const c=customEx();c[sport]=c[sport]||[];
+    if(cur){cur.n=n;cur.e=em;cur.cat=$("exfC").value}
+    else c[sport].push({id:"x"+uid(),e:em,n,cat:$("exfC").value,custom:true});
+    save();closeSheet();renderExos();toast("✅ Exercice enregistré")};
+}
 
 /* ===== Cycle ===== */
 function cycleState(){return cyclePhase(today())}

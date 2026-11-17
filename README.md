@@ -11,9 +11,9 @@ Version 3, reconstruite de zéro. Remplace « Suivi salle » (v1 dans `ilane`, v
 - 🏃 **Tous les sports** (course, vélo, natation, padel, 🏐 volley, escalade, rando, foot, HIIT, maison, + sports custom) : séance avec durée, distance, exercices minutés (total auto) et note
 - ⭐ **Avis sur la séance** : à chaque enregistrement, note de 1 à 5 étoiles
 - 🎯 **Défis** : défi du jour (10 défis généraux + défis quotidiens par sport, validable manuellement) + défi par sport (2 séances/semaine) → 💎
-- 📈 **Progrès** : heatmap 16 semaines, minutes/semaine, répartition par sport, **⚖️ Mon poids** (pesée + courbe), **💪 Charges à la salle** (courbe par exercice)
+- 📈 **Progrès** : heatmap 16 semaines, minutes/semaine, répartition par sport, **⚖️ Mon poids** (pesée + courbe), **📈 Progression exercice** (sport → exo → mesure : poids, reps, temps, vitesse km/h, distance, séries ; toutes les mesures)
 - 🍽️ **Nutrition** : calculateur Mifflin-St Jeor + 3 modes (🥘 assiettes-types, 🍽️ plats pesés en g ou en assiettes, ⌨️ direct) + eau 💧
-- 🏋️ **Exos** : échauffement, exercices guidés et étirements par sport favori (cochables par jour)
+- 🏋️ **Exos** : échauffement, exercices et étirements par sport (cochables), **📊 Mesurer** sur chaque exo (kg, reps, séries, temps mm:ss, distance → vitesse km/h auto, note), exos personnalisés créables/modifiables/supprimables. Chaque mesure compte comme une séance (streak/badges)
 - 🌙 **Cycle** (profils femme) : phase du jour + conseil, calendrier prévisionnel mensuel (‹ ›), humeur par jour, réglages + historique
 - 👤 **Profil** : identité + IMC, objectifs globaux et par sport, résumé des **rangs** par sport, sports favoris + création, **thème & couleurs** (accents, 6 duos, couleurs libres), export/import JSON, multi-comptes
 - 🏛️ **Panthéon** (nouvel onglet) : quête de l'Olympe — **50 badges par sport** (10 séances de 10 à 100, 10 régularité streak + hebdo, 10 charge de travail adaptée au sport, 20 insignes de rang), **5 rangs grecs** (Éphèbe · Guerrier · Héros · Demi-dieu · Olympien, +1 rang tous les 10 badges), **rang Olympe global** (13 dieux éveillés à chaque sport finalisé 50/50, thème Or au complet), liste des 💎 gagnés. Anciens badges réinitialisés une seule fois (migration `badgeV2`)
@@ -27,7 +27,7 @@ Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** r�
 1. Tout dans `index.html` — pas de fichiers CSS/JS séparés, zéro dépendance
 2. Zéro backend, données en localStorage (`el-v1:<compte>`), comptes dans `sg-accounts`
 3. Toute nouvelle couleur a sa déclinaison light **et** dark dans les blocs de tokens
-4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v22`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
+4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v23`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
 5. Cibles tactiles ≥ 44 px
 6. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"` (géré dans `renderAll` + handler `pOk`)
 
