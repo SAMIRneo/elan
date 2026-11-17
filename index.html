@@ -194,8 +194,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
 <!-- ===== App ===== -->
 <main id="app" hidden>
   <section id="sctoday"></section>
-  <section id="scjournal" hidden></section>
-  <section id="scprogres" hidden></section>
+    <section id="scprogres" hidden></section>
   <section id="scnut" hidden></section>
   <section id="sccycle" hidden></section>
   <section id="scexos" hidden></section>
@@ -204,7 +203,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-off
 </main>
 <nav class="tabbar" id="tabbar" hidden aria-label="Navigation principale">
   <button data-t="today" aria-current="page"><i>⚡</i>Aujourd'hui</button>
-  <button data-t="journal"><i>📒</i>Journal</button>
   <button data-t="progres"><i>📈</i>Progrès</button>
   <button data-t="nut"><i>🍽️</i>Nutrition</button>
   <button data-t="exos"><i>🏋️</i>Exos</button>
@@ -617,7 +615,7 @@ function renderAll(){if(!S||!NAME)return;
   const femme=S.profile.sexe==="femme";
   if(cy)cy.style.display=femme?"flex":"none";
   if(!femme&&SCR==="cycle"){SCR="today";document.querySelectorAll("main section").forEach(s=>s.hidden=s.id!=="sctoday")}
-  ({today:renderToday,journal:renderJournal,progres:renderProgres,nut:renderNut,exos:renderExos,cycle:renderCycle,profil:renderProfil,pantheon:renderPantheon})[SCR]()}
+  ({today:renderToday,progres:renderProgres,nut:renderNut,exos:renderExos,cycle:renderCycle,profil:renderProfil,pantheon:renderPantheon})[SCR]()}
 
 /* ===== Comptes ===== */
 function accs(){return J("sg-accounts",true)||{}}
@@ -766,11 +764,14 @@ function renderToday(){const d=new Date(),A=weekAct(),st=streak();
   ${!activeDays().has(today())&&d.getHours()>=15?`<p class="hint" style="text-align:center;margin:4px 0 10px">Pas encore de séance aujourd'hui — même 20 min comptent ⚡</p>`:""}
   <div class="card">
     <div class="row"><h2>Dernières activités</h2>${nb?`<small class="hint">🏆 ${nb} badges</small>`:""}</div>
-    ${recent.length?recent.map(a=>{const s=sportOf(a.s);return `<div class="act"><div class="sico">${s.e}</div><div class="grow"><b>${esc(s.n)}</b><small class="hint" style="display:block">${metSummary(a)} · ${kcalOf(a)} kcal · ${fd(a.d)}</small></div></div>`}).join(""):`<p class="empty">Rien pour l'instant.<br>Ta première activité est à un tap ⚡</p>`}
+    ${recent.length?recent.map(a=>{const s=sportOf(a.s);return `<div class="act"><div class="sico">${s.e}</div><div class="grow"><b>${esc(s.n)}</b><small class="hint" style="display:block">${metSummary(a)} · ${kcalOf(a)} kcal · ${fd(a.d)}</small></div><button class="del" data-del="${a.id}" aria-label="Supprimer cette activité">🗑️</button></div>`}).join(""):`<p class="empty">Rien pour l'instant.<br>Ta première activité est à un tap ⚡</p>`}
   </div>`;
   $("tt").onclick=toggleTheme;
   $("newAct").onclick=sportPicker;
   document.querySelectorAll("[data-qs]").forEach(b=>b.onclick=()=>openActForm(b.dataset.qs));
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Supprimer cette activité ?"))return;
+    const id=b.dataset.del;const a=S.acts.find(x=>x.id===id);S.acts=S.acts.filter(x=>x.id!==id);
+    if(a&&a.s==="muscu")S.sets=S.sets.filter(x=>x.a!==id);save();renderAll()});
   document.querySelectorAll("[data-mood]").forEach(b=>b.onclick=()=>{setMood(today(),+b.dataset.mood);renderToday();if(S.mood[today()]!==undefined)toast("Humeur notée "+MOODS[S.mood[today()]])});
   const ck=$("chalOk");if(ck)ck.onclick=()=>{S.chal=S.chal||{};S.chal[today()]={id:c.id,done:true};earnChallenge("ch",c.id,"💎","Défi du jour : "+c.n);renderToday()}}
 
@@ -844,27 +845,6 @@ function openActForm(sid){if(sid==="other")return sportPicker();
   exList()}
 let tmpEx=[];
 function lastMin(sid){const a=S.acts.filter(x=>x.s===sid).slice(-1)[0];return a&&a.met.min}
-
-/* ===== Journal ===== */
-function renderJournal(){const A=S.acts.slice().sort((a,b)=>b.d.localeCompare(a.d)||b.t-a.t);
-  const W=weekAct(),wm=W.reduce((s,a)=>s+minOf(a),0),da=activeDays();
-  let weekDays=0;for(let i=0;i<7;i++)if(da.has(ziso(dn(monday())+i)))weekDays++;
-  $("scjournal").innerHTML=`
-  <h1>Journal</h1><p class="hint">Tout ce que tu as bougé, dans l'ordre.</p>
-  <div class="kpi">
-    <div class="card"><div class="num" style="font-size:26px">${W.length}</div><p class="hint" style="margin:0">séances cette semaine</p></div>
-    <div class="card"><div class="num" style="font-size:26px">${hh(wm)}</div><p class="hint" style="margin:0">temps actif</p></div>
-    <div class="card"><div class="num" style="font-size:26px">${weekDays}/7</div><p class="hint" style="margin:0">jours actifs</p></div>
-  </div>
-  <button class="btn big" id="newAct" style="margin-bottom:12px">＋ Nouvelle activité</button>
-  <div class="card">${A.length?(()=>{let out="",ld="";A.forEach(a=>{const s=sportOf(a.s);
-      if(a.d!==ld){ld=a.d;const dtot=A.filter(x=>x.d===a.d).reduce((t,x)=>t+kcalOf(x),0);out+=`<div class="dayh"><span>${fd(a.d)}</span><small>${dtot} kcal</small></div>`}
-      out+=`<div class="act"><div class="sico">${s.e}</div><div class="grow"><b>${esc(s.n)}</b><small class="hint" style="display:block">${metSummary(a)}${a.met.note?" · "+esc(a.met.note):""}</small></div><small class="hint" style="white-space:nowrap">${kcalOf(a)} kcal</small><button class="del" data-del="${a.id}" aria-label="Supprimer">🗑️</button></div>`});
-      return out})():`<p class="empty">Ton journal est vide.<br>Chaque séance compte — même courte.</p>`}</div>`;
-  $("newAct").onclick=sportPicker;
-  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{if(!confirm("Supprimer cette activité ?"))return;
-    const id=b.dataset.del;const a=S.acts.find(x=>x.id===id);S.acts=S.acts.filter(x=>x.id!==id);
-    if(a&&a.s==="muscu")S.sets=S.sets.filter(x=>x.a!==id);save();renderAll()})}
 
 /* ===== Progrès ===== */
 
