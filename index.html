@@ -496,6 +496,7 @@ function commonSportBadges(id,sp){
 function sportBadgeDefs(id){
   const sp=sportOf(id);const defs=commonSportBadges(id,sp);
   const acts=(S.acts||[]).filter(a=>a.s===id);
+  const cnt=()=>acts.length;
   const km=acts.reduce((s,a)=>s+(a.met.km||0),0);
   const mins=acts.reduce((s,a)=>s+(a.met.min||0),0);
   const maxKm=acts.reduce((m,a)=>Math.max(m,a.met.km||0),0);
