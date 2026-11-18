@@ -347,7 +347,7 @@ const DEFIS=[
   {id:'d10',t:'Étirements 10 minutes',ic:'🧘'}
 ];
 const RANGS=[
-  {n:'Éphèbe',min:0},{n:'Guerrier',min:5},{n:'Héros',min:10},{n:'Demi-dieu',min:15},{n:'Olympien',min:20}
+  {n:'Éphèbe',min:0},{n:'Guerrier',min:5},{n:'Héros',min:10},{n:'Demi-dieu',min:20}
 ];
 /* ============ BADGES DESSINÉS (or & laurier) ============ */
 const BADGE_ART={
@@ -368,7 +368,7 @@ const SHOP=[
   {id:'flame-rainbow',cat:'flame',nom:'Flamme arc-en-ciel',ic:'🌈',img:'assets/cos-flame-rainbow.jpg',price:15,desc:'Toutes les couleurs'},
   {id:'title-pr',cat:'title',nom:'Tueur de PR',ic:'🏆',img:'assets/cos-title-pr.jpg',price:10,desc:'Affiché à côté de ton prénom'},
   {id:'title-streak',cat:'title',nom:'Streak Beast',ic:'🔥',img:'assets/cos-title-streak.jpg',price:12,desc:'Pour les réguliers'},
-  {id:'title-olympe',cat:'title',nom:'Olympien',ic:'👑',img:'assets/cos-title-olympe.jpg',price:18,desc:'Le sommet de l’Olympe'},
+  {id:'title-olympe',cat:'title',nom:'Divinité',ic:'👑',img:'assets/cos-title-olympe.jpg',price:18,desc:'Le sommet de l’Olympe'},
   {id:'frame-gold',cat:'frame',nom:'Cadre or',ic:'🟡',img:'assets/cos-frame-gold.jpg',price:15,desc:'Anneau doré'},
   {id:'frame-laurel',cat:'frame',nom:'Cadre laurier',ic:'🌿',img:'assets/cos-frame-laurel.jpg',price:12,desc:'Feuilles d’or'},
   {id:'frame-volt',cat:'frame',nom:'Cadre électrique',ic:'⚡',img:'assets/cos-frame-volt.jpg',price:18,desc:'Lime qui pulse'},
@@ -654,7 +654,15 @@ function syncBadges(){
   defs.forEach(b=>{if(b.ok()&&!D.badges.includes(b.id))D.badges.push(b.id)});
 }
 function rankOf(sp){const n=D.badges.filter(b=>b.startsWith(sp+'-')).length;let r=RANGS[0];for(const x of RANGS)if(n>=x.min)r=x;return {name:r.n,n}}
-function olympe(){return ['muscu','cardio'].map(s=>rankOf(s).name==='Olympien').filter(Boolean).length}
+function olympe(){return ['muscu','cardio'].filter(s=>rankOf(s).n>=20).length}
+function globalRank(){
+  const total=D.badges.length;
+  if(total>=40)return 'Divinité';
+  if(total>=20)return 'Demi-dieu';
+  if(total>=10)return 'Héros';
+  if(total>=4)return 'Guerrier';
+  return 'Éphèbe';
+}
 function weekKey(date){
   const d=new Date(date+'T12:00:00');d.setDate(d.getDate()-((d.getDay()+6)%7));return ymd(d);
 }
@@ -897,7 +905,8 @@ function muscuPrograms(){
     </div>`).join('')}
     <button class="btn sm block" style="margin-top:8px" data-act="pnew">＋ Nouveau programme</button>
   </div>
-  <div class="hint">💡 Modifie un programme pour ajouter/retirer des exercices de ton catalogue.</div>`;
+  <button class="btn block" style="margin-top:10px" data-go="exos">📋 Catalogue d'exercices & mesures</button>
+  <div class="hint" style="margin-top:10px">💡 Modifie un programme pour ajouter/retirer des exercices de ton catalogue.</div>`;
 }
 function muscuHistory(){
   const a=D.activities.filter(x=>x.type==='muscu').slice().reverse();
@@ -1005,15 +1014,19 @@ function weightChart(pts){
   if(pts.length<2)return `<div class="empty tiny">Ajoute au moins 2 pesées pour voir la courbe.</div>`;
   const vs=pts.map(p=>p.kg),min=Math.min(...vs)-.5,max=Math.max(...vs)+.5,rng=max-min||1;
   const w=280,h=70;const xy=vs.map((v,i)=>[i/(vs.length-1)*w,h-(v-min)/rng*h]);
-  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:80px;margin-top:8px;overflow:visible"><polyline points="${xy.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linejoin="round"/>${xy.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="var(--ac)"/>`).join('')}</svg>
-  <div class="row between tiny muted"><span>${pts[0].kg} kg</span><span>${pts[pts.length-1].kg} kg</span></div>`;
+  const labels=xy.map((p,i)=>`<text x="${p[0]}" y="${Math.max(9,p[1]-8)}" font-size="8" font-weight="800" fill="var(--mut)" text-anchor="middle">${vs[i]}</text>`).join('');
+  const dots=xy.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--ac)"><title>${pts[i].date} · ${vs[i]} kg</title></circle>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:88px;margin-top:8px;overflow:visible">${labels}<polyline points="${xy.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linejoin="round"/>${dots}</svg>
+  <div class="row between tiny muted"><span>${fmtDate(pts[0].date,{day:'numeric',month:'short'})}</span><span>${fmtDate(pts[pts.length-1].date,{day:'numeric',month:'short'})}</span></div>`;
 }
 function lineChart(pts){
   if(pts.length<2)return `<div class="empty tiny">Pas assez de mesures pour tracer une courbe.</div>`;
   const vs=pts.map(p=>p.valeur),min=Math.min(...vs)*.95,max=Math.max(...vs)*1.05||1,rng=max-min||1;
   const w=280,h=70;const xy=vs.map((v,i)=>[i/(vs.length-1)*w,h-(v-min)/rng*h]);
-  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:80px;margin-top:10px;overflow:visible"><polyline points="${xy.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linejoin="round"/>${xy.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="var(--ac)"/>`).join('')}</svg>
-  <div class="row between tiny muted"><span>${pts[0].valeur}</span><span>${pts[pts.length-1].valeur}</span></div>`;
+  const labels=xy.map((p,i)=>`<text x="${p[0]}" y="${Math.max(9,p[1]-8)}" font-size="8" font-weight="800" fill="var(--mut)" text-anchor="middle">${vs[i]}</text>`).join('');
+  const dots=xy.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="var(--ac)"><title>${pts[i].date} · ${vs[i]}</title></circle>`).join('');
+  return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:88px;margin-top:10px;overflow:visible">${labels}<polyline points="${xy.map(p=>p.join(',')).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linejoin="round"/>${dots}</svg>
+  <div class="row between tiny muted"><span>${fmtDate(pts[0].date,{day:'numeric',month:'short'})}</span><span>${fmtDate(pts[pts.length-1].date,{day:'numeric',month:'short'})}</span></div>`;
 }
 
 /* ---------- Exos ---------- */
@@ -1106,16 +1119,16 @@ VIEWS.pantheon=()=>{
   const rm=rankOf('muscu'),rc=rankOf('cardio');
   return `<h1 class="page">Panthéon 🏛️</h1><p class="sub">La quête de l'Olympe, version muscu & cardio.</p>
   <div class="card olympe">
-    <div class="row between"><span class="pill">Rang Olympe</span><span class="pill">${olympe()} / 2 dieux</span></div>
-    <div class="rank" style="font-size:30px;margin:12px 0">${olympe()===2?'Olympien suprême':olympe()===1?'Demi-dieu':'Éphèbe'}</div>
-    <div class="bar"><i style="width:${olympe()/2*100}%;background:var(--ol-gold)"></i></div>
-    <div class="tiny" style="margin-top:8px">Finalise les 2 disciplines (rang Olympien) pour éveiller tous les dieux.</div>
+    <div class="row between"><span class="pill">Rang divin</span><span class="pill">${olympe()} / 2 sports validés</span></div>
+    <div class="rank" style="font-size:30px;margin:12px 0">${globalRank()}</div>
+    <div class="bar"><i style="width:${clamp(D.badges.length/40*100,0,100)}%;background:var(--ol-gold)"></i></div>
+    <div class="tiny" style="margin-top:8px">${olympe()===2?'Les deux sports sont validés : tu es Divinité.':`Valide un sport en entier (20 badges) pour devenir Demi-dieu, puis les deux pour atteindre la Divinité.`}</div>
   </div>
   ${['muscu','cardio'].map(s=>{const r=rankOf(s),n=got.filter(b=>b.startsWith(s+'-')).length;
     const next=RANGS.find(x=>x.min>n);
     return `<div class="card olympe"><div class="row between"><b>${s==='muscu'?'🏋️ Musculation':'🏃 Cardio'}</b><span class="rank">${r.name}</span></div>
       <div class="bar" style="margin:10px 0"><i style="width:${clamp(n/20*100,0,100)}%;background:var(--ol-gold)"></i></div>
-      <div class="tiny">${n} / 20 badges · ${next?`prochain rang (${next.n}) dans ${next.min-n} badges`:'rang maximal atteint'}</div></div>`}).join('')}
+      <div class="tiny">${n} / 20 badges · ${n>=20?'sport validé · Demi-dieu':`prochain rang (${next?.n}) dans ${next.min-n} badges`}</div></div>`}).join('')}
   <div class="sec-title">Badges</div>
   ${['muscu','cardio'].map(s=>`<div class="card olympe">
     <div class="row between"><b class="small">${s==='muscu'?'🏋️ Musculation':'🏃 Cardio'}</b><span class="bcount">${got.filter(b=>b.startsWith(s+'-')).length} / 20</span></div>
@@ -1259,7 +1272,7 @@ VIEWS.profil=()=>{
 
 /* ---------- Menus / modales ---------- */
 function moreSheet(){
-  const extra=[['shop','🛍️','Boutique'],['exos','📋','Exercices'],['nutrition','🍽️','Nutrition'],['defis','🎯','Défis'],['pantheon','🏛️','Panthéon']];
+  const extra=[['shop','🛍️','Boutique'],['nutrition','🍽️','Nutrition'],['defis','🎯','Défis'],['pantheon','🏛️','Panthéon']];
   if(D.profile.sexe==='femme')extra.push(['cycle','🌙','Cycle']);
   extra.push(['profil','👤','Profil'],['compte','🔀','Changer de compte']);
   openSheet('Menu',`<div class="row between" style="margin-bottom:10px"><span class="small muted">Ton solde</span><span class="gempill">💎 ${D.gems||0}</span></div>

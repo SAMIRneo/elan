@@ -1,4 +1,4 @@
-const CACHE="elan-v42";
+const CACHE="elan-v43";
 const CRITICAL=["./","./index.html","./manifest.webmanifest","./icon.svg","./icon-192.png","./icon-512.png"];
 const OPTIONAL=[
   "./assets/cos-flame-gold.jpg","./assets/cos-flame-ice.jpg","./assets/cos-flame-rainbow.jpg",

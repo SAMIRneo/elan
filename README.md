@@ -13,12 +13,12 @@ Version 4 — **reconstruite de zéro**. La v3 multi-sport était trop éparpill
 ## Écrans secondaires
 
 - 📈 **Progrès** — heatmap 16 semaines, minutes sur 7 jours, répartition muscu/cardio, pesée + courbe de poids + IMC, exploration de toutes les mesures par sport → exo → mesure avec courbe.
-- 📋 **Exercices** — catalogue coché (échauffement / exercices / étirements), bouton **📊 Mesurer** (kg, reps, séries, temps, distance, vitesse) qui enregistre la mesure **et** compte comme séance, exos personnalisés (CRUD).
+- 📋 **Exercices** (plus dans le menu ☰ — accessible depuis **Muscu → Programmes → Catalogue d'exercices**) — catalogue coché (échauffement / exercices / étirements), bouton **📊 Mesurer** (kg, reps, séries, temps, distance, vitesse) qui enregistre la mesure **et** compte comme séance, exos personnalisés (CRUD).
 - 🍽️ **Nutrition** — Mifflin-St Jeor (+ variantes sèche/prise), 3 modes de saisie (assiettes, plats pesés, direct), compteur d'eau.
 - 🎯 **Défis** — défi du jour, validation manuelle, **+1 💎 par défi** (une seule fois par défi, pas de ferme).
 - 🛍️ **Boutique** (menu ☰) — cosmétiques achetés avec les gems, **aucun avantage sportif** : styles de flamme de streak, titres à côté du prénom, cadres de profil, bannières de profil (12 objets, 8–18 💎). Acheter équipe automatiquement ; chaque catégorie peut être retirée. **Vrais effets visuels** : flamme qui vacille avec étincelles montantes, cadre à bordure conique qui tourne, titre avec balayage lumineux, bannière animée (haze/dégradé mobile, pulsation néon), et bursts de particules 💎/✨/🌿/⚡ à la validation d'un défi, à l'achat et à l'enregistrement d'une séance. `prefers-reduced-motion` désactive les animations.
 - 🌙 **Cycle** — uniquement pour les profils femme : phase du jour, conseil, calendrier mensuel, réglages.
-- 🏛️ **Panthéon** — **20 badges dessinés en SVG par discipline** (or & laurier), répartis en 5 catégories de conditions : séances, streak, volume (kg soulevés / km cumulés), records/PR et régularité hebdo. 5 rangs grecs (Éphèbe → Olympien à 20 badges), dieux éveillés quand les deux disciplines atteignent Olympien.
+- 🏛️ **Panthéon** — **20 badges dessinés en SVG par discipline** (or & laurier), répartis en 5 catégories de conditions : séances, streak, volume (kg soulevés / km cumulés), records/PR et régularité hebdo. Rangs : Éphèbe → Guerrier → Héros → **Demi-dieu quand un sport est validé en entier (20 badges)** → **Divinité quand les deux le sont (40 badges)**.
 - 👤 **Profil** — identité, IMC, rythme hebdo, récap des rangs, thème clair/sombre, couleur d'accent (8 swatches, 6 duos, couleur libre), export/import JSON, multi-comptes.
 
 L'avatar par défaut est une **silhouette vectorielle** (plus d'emoji 👤). Les 12 cosmétiques sont illustrés par des **photos réalistes importées localement** dans `assets/` (sources Pexels, voir `assets/CREDITS.md`). La **bannière photo est affichée en haut de tous les écrans** (en haut de la page, elle défile avec le contenu — pas de sticky —, clic → Profil). Le cadre laurier est une **couronne de laurier dorée dessinée en SVG** autour du compte. La bannière Temple montre un **vrai temple grec au coucher de soleil**.
@@ -45,7 +45,7 @@ Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** r�
 2. Zéro backend, données en localStorage (`el-v1:<compte>`), comptes dans `sg-accounts`
 3. Version de données `v:4` — toute structure plus ancienne déclenche une remise à zéro
 4. Toute nouvelle couleur a sa déclinaison light **et** dark dans les tokens
-5. **Incrémenter `CACHE` dans `sw.js` à chaque modification** (actuellement `elan-v42`) — la page est network-first avec `cache:"no-store"` pour éviter les 304 masquant une nouvelle version, mais retombe sur le cache si la réponse n'est pas ok
+5. **Incrémenter `CACHE` dans `sw.js` à chaque modification** (actuellement `elan-v43`) — la page est network-first avec `cache:"no-store"` pour éviter les 304 masquant une nouvelle version, mais retombe sur le cache si la réponse n'est pas ok
 6. Cibles tactiles ≥ 44 px
 7. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"`
 
