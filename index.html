@@ -18,6 +18,7 @@
   --bg:#0a0a0c;--bg2:#101013;--card:#16161a;--card2:#1e1e24;--card3:#26262e;
   --tx:#f4f4f6;--mut:#9a9aa4;--dim:#85858f;--line:#2b2b33;--line2:#3a3a44;
   --ac:#ccff00;--ac-text:#ccff00;--ac-tx:#0a0a0c;--ac-soft:rgba(204,255,0,.12);
+  --ac2:#60a5fa;--ac2-text:#60a5fa;--ac2-soft:rgba(96,165,250,.12);
   --ok:#4ade80;--wa:#fbbf24;--bad:#f87171;--info:#60a5fa;
   --sh:0 8px 30px rgba(0,0,0,.35);
   --ol-gold:#f3c969;--ol-marble:#e7e2d8;--ol-laurel:#5f8a4d;--ol-bg:#1a1710;--ol-line:#4a3d22;--ol-tx:#eadfc4;--ol-shine:#fff2c4;
@@ -26,6 +27,7 @@
   --bg:#f4f5f2;--bg2:#eaede6;--card:#fff;--card2:#f5f6f2;--card3:#eceee7;
   --tx:#14160f;--mut:#5c6155;--dim:#666b5f;--line:#dfe3d8;--line2:#c9cfbe;
   --ac:#7a9e00;--ac-text:#4a7d00;--ac-tx:#fff;--ac-soft:rgba(122,158,0,.12);
+  --ac2:#2563eb;--ac2-text:#1d4ed8;--ac2-soft:rgba(37,99,235,.12);
   --ok:#16a34a;--wa:#b45309;--bad:#dc2626;--info:#2563eb;
   --sh:0 8px 30px rgba(40,50,20,.10);
   --ol-gold:#a67c1a;--ol-marble:#6b6355;--ol-laurel:#3f6b34;--ol-bg:#fbf6e8;--ol-line:#d9c793;--ol-tx:#4a3a12;--ol-shine:#8a6614;
@@ -55,7 +57,9 @@ nav#nav{position:fixed;left:0;right:0;bottom:0;z-index:50;background:color-mix(i
 .navin{max-width:640px;margin:auto;display:flex;justify-content:space-around;align-items:stretch}
 .nb{flex:1;min-width:0;height:56px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--dim);font-size:10px;font-weight:700}
 .nb i{font-style:normal;font-size:20px;line-height:1}
-.nb.on{color:var(--ac-text);background:var(--ac-soft)}
+.nb.on{color:var(--ac-text);background:var(--ac2-soft)}
+.ac2{color:var(--ac2-text)}
+.btn.sec{background:var(--ac2);color:var(--ac2-tx);border-color:transparent}
 .nb.add i{background:var(--ac);color:var(--ac-tx);width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:26px;font-weight:400;margin-top:-14px;box-shadow:var(--sh)}
 /* ============ CARD / UI ============ */
 .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin:12px 0;box-shadow:var(--sh)}
@@ -98,7 +102,7 @@ input[type=range]{width:100%;accent-color:var(--ac)}
 .empty{text-align:center;padding:30px 16px;color:var(--mut)}
 .empty i{font-style:normal;font-size:40px;display:block;margin-bottom:8px}
 .bar{height:8px;background:var(--card3);border-radius:99px;overflow:hidden}
-.bar>i{display:block;height:100%;background:var(--ac);border-radius:99px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));border-radius:99px}
 .chk{width:44px;height:44px;border-radius:12px;border:2px solid var(--line2);display:grid;place-items:center;flex:none;font-size:16px}
 .chk.on{background:var(--ac);border-color:var(--ac);color:var(--ac-tx)}
 /* ============ STREAK ============ */
@@ -114,7 +118,7 @@ input[type=range]{width:100%;accent-color:var(--ac)}
 .heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,10px);gap:3px;overflow-x:auto;padding-bottom:4px}
 .heat i{width:10px;height:10px;border-radius:3px;background:var(--card3);display:block}
 .heat i.l1{background:color-mix(in srgb,var(--ac) 30%,var(--card3))}
-.heat i.l2{background:color-mix(in srgb,var(--ac) 55%,var(--card3))}
+.heat i.l2{background:color-mix(in srgb,var(--ac2) 70%,var(--card3))}
 .heat i.l3{background:var(--ac)}
 .heat i.rs{background:var(--info)}
 /* ============ MODAL / SHEET ============ */
@@ -158,6 +162,8 @@ input[type=range]{width:100%;accent-color:var(--ac)}
 .avatarpick{width:56px;height:56px;border-radius:15px;overflow:hidden;border:2px solid var(--line);padding:0;background:var(--card2);display:grid;place-items:center;flex:none}
 .avatarpick img{width:100%;height:100%;object-fit:cover;display:block}
 .avatarpick.on{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-soft)}
+.pick-wrap{position:relative;flex:none}
+.pick-del{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--bad);color:#fff;font-size:11px;font-weight:900;display:grid;place-items:center;border:2px solid var(--card);z-index:1}
 .avatarpick.silhouette{color:var(--mut)}
 .avatarpick.silhouette .avatar{border:0;width:36px;height:36px}
 .avatarpick.silhouette .avatar::before{display:none}
@@ -238,7 +244,7 @@ button.banner{display:block;width:calc(100% + 28px);padding:0;text-align:left;cu
 .list-row{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border:1px solid var(--line);border-radius:14px;margin:8px 0}
 .ic{width:44px;height:44px;border-radius:13px;background:var(--card3);display:grid;place-items:center;font-size:20px;flex:none}
 .ic.mus{background:color-mix(in srgb,var(--ac) 16%,var(--card3))}
-.ic.cardio{background:color-mix(in srgb,var(--info) 18%,var(--card3))}
+.ic.cardio{background:color-mix(in srgb,var(--ac2) 20%,var(--card3))}
 .spark{display:flex;align-items:flex-end;gap:3px;height:42px}
 .spark i{flex:1;background:var(--ac);border-radius:3px 3px 0 0;min-height:2px}
 .hint{background:var(--ac-soft);border:1px solid color-mix(in srgb,var(--ac) 30%,transparent);border-radius:13px;padding:11px 13px;font-size:13px}
@@ -392,6 +398,11 @@ function flameHTML(){
     <path d="M16 2c5 6 8 10 8 15a8 8 0 1 1-16 0c0-4 2-7 4-9 0 3 1.5 5 3 5 1-4 1-7 1-11z" fill="url(#fl)"/></svg>${sparks}</span>`;
 }
 function titleHTML(){const id=equipped('title'),it=id&&shopItem(id);return it?`<span class="ttag">${esc(it.nom)}</span>`:''}
+function avatarOptions(){
+  const own=(D.profile?.photos||[]).map((src,i)=>({src,label:`Ma photo ${i+1}`,own:i}));
+  const presets=[1,2,3].map(i=>({src:`assets/cos-avatar-${i}.jpg`,label:`Avatar ${i}`}));
+  return [...own,...presets];
+}
 function avatarHTML(size){
   const f=equipped('frame'),ph=D.profile?.photo;
   return `<div class="avatar ${f||''} ${size==='lg'?'lg':''}" role="img" aria-label="Photo de profil">
@@ -441,11 +452,11 @@ let ACCTS=[],CUR=null,D=null,VIEW='today',SUB={},EDIT={};
 function blank(){
   return {
     v:4,created:ymd(),
-    profile:{prenom:'',sexe:'homme',age:28,taille:175,poids:75,objectif:'Progresser',rythme:{muscu:3,cardio:2}},
+    profile:{prenom:'',sexe:'homme',age:28,taille:175,poids:75,objectif:'Progresser',rythme:{muscu:3,cardio:2},photo:'',photos:[]},
     activities:[],weights:[],customExos:[],programs:JSON.parse(JSON.stringify(DEF_PROGRAMS)),
     measurements:[],records:[],moods:{},challenges:{},nutrition:{eau:0,eauDate:ymd(),repas:[],mode:'assiettes'},
     cycle:{debut:'',longueur:28,regles:5},
-    badges:[],settings:{theme:'dark',accent:'#ccff00'},
+    badges:[],settings:{theme:'dark',accent:'#ccff00',accent2:'#60a5fa'},
     streak:{best:0,rest:[]},
     gems:0,gemLog:[],cosmetics:{owned:[],equipped:{flame:'classic',title:'',frame:'',banner:''}}
   };
@@ -471,7 +482,8 @@ function sanitizeData(o){
     age:N(p.age,28,10,120),taille:N(p.taille,175,100,230),poids:N(p.poids,75,20,400),
     objectif:S(p.objectif,80)||'Progresser',
     rythme:{muscu:N(p.rythme?.muscu,3,0,14),cardio:N(p.rythme?.cardio,2,0,14)},
-    photo:typeof p.photo==='string'&&p.photo.length<400000&&/^(data:image\/(jpeg|png|webp);base64,|assets\/)/.test(p.photo)?p.photo:''
+    photo:typeof p.photo==='string'&&p.photo.length<400000&&/^(data:image\/(jpeg|png|webp);base64,|assets\/)/.test(p.photo)?p.photo:'',
+    photos:Array.isArray(p.photos)?p.photos.filter(x=>typeof x==='string'&&x.length<400000&&/^data:image\/(jpeg|png|webp);base64,/.test(x)).slice(0,8):[]
   };
   d.activities=A(o.activities).filter(x=>x&&typeof x==='object').map(x=>({
     id:S(x.id,40)||uid(),date:Dt(x.date),type:x.type==='cardio'?'cardio':'muscu',
@@ -498,7 +510,7 @@ function sanitizeData(o){
   const validBadges=new Set(badgeDefs().map(b=>b.id));
   d.badges=A(o.badges).map(String).filter(x=>validBadges.has(x));
   const s=o.settings||{};
-  d.settings={theme:s.theme==='light'?'light':'dark',accent:/^#[0-9a-f]{6}$/i.test(s.accent)?s.accent:'#ccff00'};
+  d.settings={theme:s.theme==='light'?'light':'dark',accent:/^#[0-9a-f]{6}$/i.test(s.accent)?s.accent:'#ccff00',accent2:/^#[0-9a-f]{6}$/i.test(s.accent2)?s.accent2:'#60a5fa'};
   const st=o.streak||{};
   d.streak={best:N(st.best,0,0,10000),rest:A(st.rest).map(Dt).slice(0,1000)};
   d.gems=N(o.gems,0,0,1000000);
@@ -536,6 +548,8 @@ function migrate(){
   for(const k in ['activities','weights','measurements','records','customExos','programs','badges','gemLog'])if(!Array.isArray(D[k]))D[k]=b[k];
   if(!D.profile||typeof D.profile!=='object')D.profile=b.profile;
   for(const k in b.profile)if(D.profile[k]===undefined)D.profile[k]=b.profile[k];
+  if(!Array.isArray(D.profile.photos))D.profile.photos=[];
+  if(typeof D.profile.photo!=='string')D.profile.photo='';
   if(!D.profile.rythme||typeof D.profile.rythme!=='object')D.profile.rythme=b.profile.rythme;
   for(const k in b.rythme)if(D.profile.rythme[k]===undefined)D.profile.rythme[k]=b.profile.rythme[k];
   if(!D.settings||typeof D.settings!=='object')D.settings=b.settings;
@@ -555,19 +569,27 @@ function luminance(hex){
   const ch=[16,8,0].map(s=>{const v=((parseInt(hex.slice(1),16)>>s)&255)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});
   return ch[0]*.2126+ch[1]*.7152+ch[2]*.0722;
 }
-function applyTheme(){
-  const dark=(D?.settings.theme||'dark')==='dark';
-  const raw=D?.settings.accent||'#ccff00';
+function themeColor(raw,dark){
   const lum=luminance(raw);
   const c=!dark&&lum>.38?shade(raw,-72):dark&&lum<.07?shade(raw,64):raw;
-  const r=document.documentElement;
-  r.dataset.theme=D?.settings.theme||'dark';
-  r.style.setProperty('--ac',c);
-  r.style.setProperty('--ac-soft',dark?c+'20':c+'18');
-  r.style.setProperty('--ac-tx',luminance(c)<.183?'#fff':'#0a0a0c');
   let t=c;
   if(!dark){let guard=0;while(luminance(t)>.18&&guard++<20)t=shade(t,-12)}
-  r.style.setProperty('--ac-text',dark?c:t);
+  return {c,text:dark?c:t};
+}
+function applyTheme(){
+  const dark=(D?.settings.theme||'dark')==='dark';
+  const r=document.documentElement;
+  const a=themeColor(D?.settings.accent||'#ccff00',dark);
+  const b=themeColor(D?.settings.accent2||'#60a5fa',dark);
+  r.dataset.theme=D?.settings.theme||'dark';
+  r.style.setProperty('--ac',a.c);
+  r.style.setProperty('--ac-soft',dark?a.c+'20':a.c+'18');
+  r.style.setProperty('--ac-tx',luminance(a.c)<.183?'#fff':'#0a0a0c');
+  r.style.setProperty('--ac-text',a.text);
+  r.style.setProperty('--ac2',b.c);
+  r.style.setProperty('--ac2-soft',dark?b.c+'20':b.c+'18');
+  r.style.setProperty('--ac2-tx',luminance(b.c)<.183?'#fff':'#0a0a0c');
+  r.style.setProperty('--ac2-text',b.text);
   document.querySelector('meta[name=theme-color]')?.setAttribute('content',dark?'#0a0a0c':'#f4f5f2');
 }
 /* ============ LOGIQUE MÉTIER ============ */
@@ -667,7 +689,7 @@ function enhanceA11y(){
   $$('.nb').forEach(b=>{if(b.classList.contains('on'))b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});
   $$('[data-act="mood"]').forEach(b=>b.setAttribute('aria-label',`Humeur ${b.dataset.v} sur 5`));
   $$('[data-act^="avis"],[data-act="wavis"],[data-act="cavis"]').forEach(b=>b.setAttribute('aria-label',`Note ${b.dataset.v} étoiles`));
-  $$('[data-act="setavatar"]').forEach(b=>b.setAttribute('aria-label',`Avatar ${b.dataset.v.split('-').pop().replace('.jpg','')}`));
+  $$('[data-act="setavatar"]').forEach(b=>b.setAttribute('aria-label',b.dataset.label||'Avatar'));
 }
 let _shellKey='';
 function render(){
@@ -796,6 +818,24 @@ VIEWS.muscu=()=>{
 };
 function allExos(){return [...MUSCU_EXOS,...D.customExos.map(e=>({...e,custom:true}))]}
 function exoById(id){return allExos().find(e=>e.id===id)}
+function lastMeasure(exo,mesure){
+  const arr=D.measurements.filter(m=>m.exo===exo&&m.mesure===mesure).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  return arr.length?arr[0].valeur:null;
+}
+function overloadHint(exo){
+  const kg=lastMeasure(exo,'kg'),reps=lastMeasure(exo,'répétitions'),series=lastMeasure(exo,'séries');
+  if(kg===null&&reps===null&&series===null)return '';
+  return [kg!==null?kg+' kg':null,reps!==null?reps+' rep':null,series!==null?series+' séries':null].filter(Boolean).join(' · ');
+}
+function applyOverload(i){
+  const e=EDIT.workout?.exos[i];if(!e)return false;
+  const kg=lastMeasure(e.nom,'kg'),reps=lastMeasure(e.nom,'répétitions'),series=lastMeasure(e.nom,'séries');
+  if(kg===null&&reps===null&&series===null)return false;
+  if(kg!==null)e.kg=String(Math.round((kg+(kg<50?2.5:5))*2)/2);
+  if(reps!==null)e.reps=String(reps<12?reps+1:reps);
+  if(series!==null)e.series=String(series);
+  return true;
+}
 function ensureWorkout(){
   if(!EDIT.workout){
     const p=D.programs[0]||DEF_PROGRAMS[0];
@@ -813,14 +853,18 @@ function muscuSeance(){
   <div class="card">
     <div class="row between"><b>Exercices de la séance</b><span class="pill">${w.exos.length}</span></div>
     <div class="tiny muted" style="margin:6px 0 4px">Laisse vide si tu n'as pas fait l'exo.</div>
-    ${w.exos.map((e,i)=>`<div class="exo-item">
-      <div class="nm">${esc(e.nom)}</div>
-      <input type="number" inputmode="decimal" placeholder="kg" data-wex="${i}" data-k="kg" value="${e.kg}">
-      <input type="number" inputmode="numeric" placeholder="rep" data-wex="${i}" data-k="reps" value="${e.reps}">
-      <input type="number" inputmode="numeric" placeholder="sér" data-wex="${i}" data-k="series" value="${e.series}">
-      <button class="btn sm gh" data-act="wrm" data-i="${i}" title="Retirer">✕</button>
-    </div>`).join('')||'<div class="empty tiny">Aucun exo. Ajoute-en un.</div>'}
+    ${w.exos.map((e,i)=>{
+      const hint=overloadHint(e.nom);
+      return `<div class="exo-block"><div class="exo-item">
+        <div class="nm">${esc(e.nom)}${hint?`<div class="tiny muted">Dernière fois : ${esc(hint)}</div>`:''}</div>
+        <input type="number" inputmode="decimal" placeholder="kg" data-wex="${i}" data-k="kg" value="${e.kg}">
+        <input type="number" inputmode="numeric" placeholder="rep" data-wex="${i}" data-k="reps" value="${e.reps}">
+        <input type="number" inputmode="numeric" placeholder="sér" data-wex="${i}" data-k="series" value="${e.series}">
+        <button class="btn sm gh" data-act="wrm" data-i="${i}" title="Retirer">✕</button>
+      </div>${hint?`<div class="row" style="justify-content:flex-end"><button class="btn sm gh ac2" data-act="surcharge" data-i="${i}">⚡ Surcharge</button></div>`:''}</div>`}).join('')||'<div class="empty tiny">Aucun exo. Ajoute-en un.</div>'}
     <button class="btn sm block" style="margin-top:10px" data-act="wadd">＋ Ajouter un exercice</button>
+    <button class="btn sm block sec" style="margin-top:8px" data-act="surcharge-all">⚡ Surcharge progressive sur tous les exos</button>
+    <div class="tiny muted" style="margin-top:6px">+2,5 kg sous 50 kg, +5 kg au-delà, +1 répétition si tu étais sous 12. Séries conservées.</div>
   </div>
   <label class="f">Durée (min)</label>
   <input class="f" id="w-duree" type="number" inputmode="numeric" placeholder="45" value="${EDIT.wDuree||''}">
@@ -1142,7 +1186,7 @@ VIEWS.shop=()=>{
 VIEWS.profil=()=>{
   const p=D.profile,s=D.settings;
   const sw=['#ccff00','#00e5ff','#ff5c8a','#ff8a00','#a78bfa','#34d399','#f3c969','#60a5fa'];
-  const duos=[['#ccff00','#0a0a0c'],['#00e5ff','#0a0a0c'],['#ff5c8a','#0a0a0c'],['#f3c969','#1a1710'],['#a78bfa','#0a0a0c'],['#34d399','#0a0a0c']];
+  const duos=[['#ccff00','#00e5ff'],['#ff5c8a','#a78bfa'],['#f3c969','#60a5fa'],['#00e5ff','#ff5c8a'],['#a78bfa','#34d399'],['#ff8a00','#60a5fa']];
   return `<h1 class="page">Profil 👤</h1><p class="sub">Ton identité, tes objectifs, ton apparence.</p>
   <div class="card">
     <div class="row">${avatarHTML('lg')}<div class="grow"><b style="font-size:19px">${esc(p.prenom||'Toi')}</b>${titleHTML()}
@@ -1150,12 +1194,19 @@ VIEWS.profil=()=>{
   </div>
   <div class="card"><b class="small">📷 Photo de profil</b>
     <div class="row wrap" style="margin-top:10px">
-      ${[1,2,3].map(i=>`<button class="avatarpick ${p.photo==='assets/cos-avatar-'+i+'.jpg'?'on':''}" data-act="setavatar" data-v="assets/cos-avatar-${i}.jpg" title="Choix ${i}"><img src="assets/cos-avatar-${i}.jpg" alt="Avatar ${i}"></button>`).join('')}
-      <button class="avatarpick silhouette ${!p.photo?'on':''}" data-act="photo-reset" title="Silhouette">${avatarHTML()}</button>
+      ${avatarOptions().map((o,i)=>`<div class="pick-wrap">
+        <button class="avatarpick ${p.photo===o.src?'on':''}" data-act="setavatar" data-i="${i}" data-label="${esc(o.label)}" aria-label="${esc(o.label)}"><img src="${esc(o.src)}" alt="" width="56" height="56"></button>
+        ${o.own!==undefined?`<button class="pick-del" data-act="photo-del" data-i="${o.own}" aria-label="Supprimer ${esc(o.label)}">✕</button>`:''}
+      </div>`).join('')}
+      <button class="avatarpick silhouette ${!p.photo?'on':''}" data-act="photo-reset" aria-label="Silhouette">${avatarHTML()}</button>
     </div>
-    <button class="btn block" style="margin-top:12px" data-act="photo-upload">＋ Importer ma photo (gratuit)</button>
-    <input type="file" id="photo-file" accept="image/*" class="hidden">
-    <div class="tiny muted" style="margin-top:8px">Ta photo est redimensionnée et stockée sur ton appareil. Aucun envoi sur un serveur.</div>
+    <button class="btn block" style="margin-top:12px" data-act="photo-upload">＋ Importer une photo (gratuit)</button>
+    <input type="file" id="photo-file" accept="image/*" multiple class="hidden">
+    <div class="row between" style="margin-top:10px">
+      <span class="tiny muted">${(p.photos||[]).length} photo${(p.photos||[]).length>1?'s':''} enregistrée${(p.photos||[]).length>1?'s':''} sur cet appareil</span>
+      ${(p.photos||[]).length?'<button class="btn sm gh" data-act="photo-clear">Tout effacer</button>':''}
+    </div>
+    <div class="tiny muted" style="margin-top:6px">Tes photos restent dans la galerie : tu peux revenir dessus à tout moment. Redimensionnées en 256×256, stockées uniquement sur ton appareil.</div>
   </div>
   <div class="card"><b class="small">Identité</b>
     <div class="grid2"><div><label class="f">Prénom</label><input class="f" id="pf-prenom" value="${esc(p.prenom)}"></div>
@@ -1177,9 +1228,17 @@ VIEWS.profil=()=>{
   </div>
   <div class="card"><b class="small">🎨 Apparence</b>
     <label class="f">Thème</label><div class="seg">${['dark','light'].map(t=>`<button class="${s.theme===t?'on':''}" data-act="settheme" data-v="${t}">${t==='dark'?'🌙 Sombre':'☀️ Clair'}</button>`).join('')}</div>
-    <label class="f">Couleur d'accent</label><div class="swatches">${sw.map(c=>`<button class="sw ${s.accent===c?'on':''}" style="background:${c}" data-act="accent" data-v="${c}"></button>`).join('')}</div>
-    <label class="f">Duos suggérés</label><div class="row wrap">${duos.map(([a,b])=>`<button class="pill" data-act="duo" data-a="${a}" data-b="${b}"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${a};border:1px solid ${b}"></span> duo</button>`).join('')}</div>
-    <label class="f">Couleur libre</label><input type="color" class="f" style="padding:4px;height:46px" value="${s.accent}" data-act="accent-custom">
+    <div class="row" style="margin-top:12px;gap:8px">
+      <div class="grow" style="background:var(--ac);color:var(--ac-tx);border-radius:12px;padding:10px;text-align:center;font-weight:900">Primaire</div>
+      <div class="grow" style="background:var(--ac2);color:var(--ac2-tx);border-radius:12px;padding:10px;text-align:center;font-weight:900">Secondaire</div>
+    </div>
+    <label class="f">Couleur primaire</label>
+    <div class="swatches">${sw.map(c=>`<button class="sw ${s.accent===c?'on':''}" style="background:${c}" data-act="accent" data-v="${c}" aria-label="Primaire ${c}"></button>`).join('')}</div>
+    <input type="color" class="f" style="padding:4px;height:46px;margin-top:8px" value="${s.accent}" data-act="accent-custom" aria-label="Primaire libre">
+    <label class="f">Couleur secondaire</label>
+    <div class="swatches">${sw.map(c=>`<button class="sw ${s.accent2===c?'on':''}" style="background:${c}" data-act="accent2" data-v="${c}" aria-label="Secondaire ${c}"></button>`).join('')}</div>
+    <input type="color" class="f" style="padding:4px;height:46px;margin-top:8px" value="${s.accent2}" data-act="accent2-custom" aria-label="Secondaire libre">
+    <label class="f">Duos suggérés</label><div class="row wrap">${duos.map(([a,b])=>`<button class="pill" data-act="duo" data-a="${a}" data-b="${b}" aria-label="Duo ${a} ${b}"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${a};border:1px solid ${b}"></span><span style="color:${a}">■</span><span style="color:${b}">■</span> duo</button>`).join('')}</div>
   </div>
   <div class="card"><b class="small">💾 Données</b>
     <div class="row" style="margin-top:10px;gap:8px"><button class="btn grow" data-act="export">⬇️ Exporter JSON</button><button class="btn grow" data-act="import">⬆️ Importer</button></div>
@@ -1270,7 +1329,8 @@ document.addEventListener('click',e=>{
       D.cosmetics.equipped[a.dataset.cat]='';commit();toast('Cosmétique retiré');break;
     }
     case 'accent':D.settings.accent=v;commit();break;
-    case 'duo':D.settings.accent=a.dataset.a;commit();toast('Duo appliqué');break;
+    case 'accent2':D.settings.accent2=v;commit();break;
+    case 'duo':D.settings.accent=a.dataset.a;D.settings.accent2=a.dataset.b;commit();toast('Duo appliqué');break;
     case 'rest':{
       const t=ymd(),i=D.streak.rest.indexOf(t);
       if(i>=0)D.streak.rest.splice(i,1);else D.streak.rest.push(t);
@@ -1318,6 +1378,12 @@ document.addEventListener('click',e=>{
     }
     case 'wrm':syncWorkout();EDIT.workout.exos.splice(+a.dataset.i,1);render();break;
     case 'wadd':syncWorkout();openExoPicker();break;
+    case 'surcharge':syncWorkout();if(applyOverload(+a.dataset.i)){render();toast('Surcharge appliquée ⚡')}else toast('Pas encore d’historique pour cet exo');break;
+    case 'surcharge-all':syncWorkout();{
+      let n=0;EDIT.workout.exos.forEach((_,i)=>{if(applyOverload(i))n++});
+      render();toast(n?`Surcharge appliquée à ${n} exo${n>1?'s':''} ⚡`:'Pas encore d’historique');
+      break;
+    }
     case 'wavis':EDIT.wAvis=+v;render();break;
     case 'wreset':EDIT.workout=null;EDIT.wNote='';EDIT.wAvis=0;render();break;
     case 'wsave':saveWorkout();break;
@@ -1374,7 +1440,24 @@ document.addEventListener('click',e=>{
     }
     /* --- profil --- */
     case 'gotoprofil':navigate('profil');break;
-    case 'setavatar':D.profile.photo=v;commit();toast('Photo de profil changée');break;
+    case 'setavatar':{
+      const o=avatarOptions()[+a.dataset.i];
+      if(o){D.profile.photo=o.src;commit();toast('Photo de profil changée')}
+      break;
+    }
+    case 'photo-del':{
+      const i=+a.dataset.i,src=D.profile.photos[i];
+      if(!src)break;
+      D.profile.photos.splice(i,1);
+      if(D.profile.photo===src)D.profile.photo='';
+      commit();toast('Photo supprimée de la galerie');break;
+    }
+    case 'photo-clear':
+      if(confirm2('Effacer toutes tes photos enregistrées ?')){
+        const had=D.profile.photos.includes(D.profile.photo);
+        D.profile.photos=[];if(had)D.profile.photo='';
+        commit();toast('Galerie vidée');
+      }break;
     case 'photo-reset':D.profile.photo='';commit();toast('Silhouette restaurée');break;
     case 'photo-upload':$('#photo-file')?.click();break;
     case 'pfsave':{
@@ -1451,22 +1534,29 @@ document.addEventListener('input',e=>{
   if(e.target.id==='c-dist')EDIT.cDist=e.target.value;
   if(e.target.id==='c-note')EDIT.cNote=e.target.value;
   if(e.target.dataset?.act==='accent-custom'){D.settings.accent=e.target.value;applyTheme();save()}
+  if(e.target.dataset?.act==='accent2-custom'){D.settings.accent2=e.target.value;applyTheme();save()}
 });
 document.addEventListener('change',e=>{
   if(e.target.id==='photo-file'){
-    const f=e.target.files?.[0];if(!f)return;
-    if(f.size>8*1024*1024){toast('Image trop volumineuse (8 Mo max)');return}
-    const img=new Image(),obj=URL.createObjectURL(f);
-    img.onload=()=>{
-      const s=256,c=document.createElement('canvas');c.width=s;c.height=s;
-      const ctx=c.getContext('2d'),side=Math.min(img.width,img.height);
-      ctx.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,s,s);
-      D.profile.photo=c.toDataURL('image/jpeg',.82);
-      URL.revokeObjectURL(obj);save();render();toast('Photo importée 📷');
-    };
-    img.onerror=()=>{URL.revokeObjectURL(obj);toast('Image illisible')};
-    img.src=obj;
-    e.target.value='';
+    const files=[...(e.target.files||[])];e.target.value='';
+    if(!files.length)return;
+    const process=f=>new Promise(res=>{
+      if(f.size>8*1024*1024){toast('Image trop volumineuse (8 Mo max)');return res()}
+      const img=new Image(),obj=URL.createObjectURL(f);
+      img.onload=()=>{
+        const s=256,c=document.createElement('canvas');c.width=s;c.height=s;
+        const ctx=c.getContext('2d'),side=Math.min(img.width,img.height);
+        ctx.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,s,s);
+        const data=c.toDataURL('image/jpeg',.82);
+        URL.revokeObjectURL(obj);
+        D.profile.photos=D.profile.photos||[];
+        if(!D.profile.photos.includes(data)&&D.profile.photos.length<8){D.profile.photos.push(data);D.profile.photo=data}
+        res();
+      };
+      img.onerror=()=>{URL.revokeObjectURL(obj);res()};
+      img.src=obj;
+    });
+    (async()=>{for(const f of files)await process(f);save();render();toast('Galerie mise à jour 📷')})();
   }
   if(e.target.matches('[data-act="pexo"]')){SUB.pexo=e.target.value;SUB.pmes='';render()}
   if(e.target.matches('[data-act="import-file"]')){

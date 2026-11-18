@@ -23,7 +23,11 @@ Version 4 — **reconstruite de zéro**. La v3 multi-sport était trop éparpill
 
 L'avatar par défaut est une **silhouette vectorielle** (plus d'emoji 👤). Les 12 cosmétiques sont illustrés par des **photos réalistes importées localement** dans `assets/` (sources Pexels, voir `assets/CREDITS.md`). La **bannière photo est affichée en haut de tous les écrans** (en haut de la page, elle défile avec le contenu — pas de sticky —, clic → Profil). Le cadre laurier est une **couronne de laurier dorée dessinée en SVG** autour du compte. La bannière Temple montre un **vrai temple grec au coucher de soleil**.
 
-**Photo de profil** : dans Profil, choix parmi 3 photos importées ou **import de sa propre photo** (redimensionnée en 256×256 via canvas, stockée en localStorage, aucun envoi réseau), plus retour à la silhouette.
+**Photo de profil** : dans Profil, **galerie persistante** — 3 avatars fournis + jusqu'à 8 photos importées (import multiple, redimensionnement 256×256 via canvas, stockage localStorage, aucun envoi réseau). Chaque photo importée reste sélectionnable, avec suppression individuelle ou totale, plus retour à la silhouette.
+
+**Couleurs** : deux accents indépendants, **primaire** (`--ac`) et **secondaire** (`--ac2`), chacun avec 8 swatches + sélecteur libre, et un aperçu côte à côte. Les duos appliquent les deux à la fois. Le secondaire colore la barre de progression (dégradé), les icônes cardio, la heatmap niveau 2 et le fond de l'onglet actif.
+
+**Surcharge progressive** : dans la séance muscu, chaque exo ayant un historique affiche « Dernière fois : … » et un bouton **⚡ Surcharge** qui pré-remplit kg / reps / séries (+2,5 kg sous 50 kg, +5 kg au-delà, +1 rep sous 12 rep). Un bouton global applique la surcharge à tous les exos.
 
 Les animations CSS (flamme, cadres, titres, sweeps) restent appliquées par-dessus. Navigation basse sur 5 entrées (Jour / Muscu / ＋ / Cardio / Progrès) ; le menu ☰ donne accès aux écrans secondaires.
 
@@ -41,7 +45,7 @@ Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** r�
 2. Zéro backend, données en localStorage (`el-v1:<compte>`), comptes dans `sg-accounts`
 3. Version de données `v:4` — toute structure plus ancienne déclenche une remise à zéro
 4. Toute nouvelle couleur a sa déclinaison light **et** dark dans les tokens
-5. **Incrémenter `CACHE` dans `sw.js` à chaque modification** (actuellement `elan-v40`) — la page est network-first avec `cache:"no-store"` pour éviter les 304 masquant une nouvelle version, mais retombe sur le cache si la réponse n'est pas ok
+5. **Incrémenter `CACHE` dans `sw.js` à chaque modification** (actuellement `elan-v41`) — la page est network-first avec `cache:"no-store"` pour éviter les 304 masquant une nouvelle version, mais retombe sur le cache si la réponse n'est pas ok
 6. Cibles tactiles ≥ 44 px
 7. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"`
 
