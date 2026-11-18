@@ -1,18 +1,61 @@
-const CACHE="elan-v26";
-const ASSETS=["./","./index.html","./manifest.webmanifest","./icon.svg","./icon-192.png","./icon-512.png"];
-self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()))});
-self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+const CACHE="elan-v40";
+const CRITICAL=["./","./index.html","./manifest.webmanifest","./icon.svg","./icon-192.png","./icon-512.png"];
+const OPTIONAL=[
+  "./assets/cos-flame-gold.jpg","./assets/cos-flame-ice.jpg","./assets/cos-flame-rainbow.jpg",
+  "./assets/cos-title-pr.jpg","./assets/cos-title-streak.jpg","./assets/cos-title-olympe.jpg",
+  "./assets/cos-frame-gold.jpg","./assets/cos-frame-laurel.jpg","./assets/cos-frame-volt.jpg",
+  "./assets/cos-banner-stade.jpg","./assets/cos-banner-temple.jpg","./assets/cos-banner-neon.jpg",
+  "./assets/cos-avatar-1.jpg","./assets/cos-avatar-2.jpg","./assets/cos-avatar-3.jpg","./assets/laurel-gold.svg"
+];
+self.addEventListener("install",e=>{
+  e.waitUntil((async()=>{
+    const c=await caches.open(CACHE);
+    // les ressources critiques sont obligatoires, les images sont tolérantes aux erreurs
+    await Promise.allSettled([...CRITICAL,...OPTIONAL].map(u=>c.add(u)));
+    await c.addAll(CRITICAL);
+    self.skipWaiting();
+  })());
+});
+self.addEventListener("activate",e=>{
+  e.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(k=>k.startsWith("elan-")&&k!==CACHE).map(k=>caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
 self.addEventListener("fetch",e=>{
-  if(e.request.method!=="GET")return;
-  // Network-first pour la page, retombe sur le cache si la réponse n'est pas ok (502 inclus)
-  if(e.request.mode==="navigate"||e.request.url.endsWith(".html")){
-    // cache:no-store évite les 304 conditionnels qui déclencheraient un retour
-    // au cache et masqueraient une nouvelle version de la page
-    e.respondWith(fetch(e.request,{cache:"no-store"}).then(res=>{if(!res.ok)throw new Error("offline");const c=res.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return res}).catch(()=>caches.match("./index.html")));
+  const req=e.request;
+  if(req.method!=="GET")return;
+  const url=new URL(req.url);
+  if(url.origin!==self.location.origin)return; // jamais de cache cross-origin
+  const isNav=req.mode==="navigate"||url.pathname.endsWith(".html");
+  if(isNav){
+    // network-first avec cache:no-store pour éviter les 304 masquant une nouvelle version
+    e.respondWith(fetch(req,{cache:"no-store"}).then(async res=>{
+      if(!res.ok)throw new Error("offline");
+      const copy=res.clone(),c=await caches.open(CACHE);
+      await c.put("./index.html",copy);
+      return res;
+    }).catch(()=>caches.match("./index.html")));
     return;
   }
-  e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(hit=>hit||fetch(e.request).then(res=>{
-    const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res
-  }).catch(()=>caches.match("./index.html"))));
+  // assets : cache immédiat + revalidation silencieuse en tâche de fond
+  e.respondWith((async()=>{
+    const cached=await caches.match(req);
+    if(cached){
+      fetch(req).then(async res=>{
+        if(res.ok){const c=await caches.open(CACHE);await c.put(req,res.clone())}
+      }).catch(()=>{});
+      return cached;
+    }
+    try{
+      const res=await fetch(req);
+      if(res.ok){const c=await caches.open(CACHE);await c.put(req,res.clone())}
+      return res;
+    }catch{
+      // pas de fallback HTML pour un asset : on échoue proprement
+      return new Response("",{status:504,statusText:"Asset indisponible hors ligne"});
+    }
+  })());
 });
 self.addEventListener("message",e=>{if(e.data==="skipWaiting")self.skipWaiting()});

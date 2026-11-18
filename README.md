@@ -1,35 +1,49 @@
-# Élan ⚡ — carnet sportif multi-sport
+# Élan ⚡ — muscu • cardio • streak
 
-Version 3, reconstruite de zéro. Remplace « Suivi salle » (v1 dans `ilane`, v2 écrasée ici).
+Version 4 — **reconstruite de zéro**. La v3 multi-sport était trop éparpillée : on resserre tout autour de trois piliers — **musculation, cardio, streak** — en gardant ce qui servait vraiment (progression, poids/IMC, exos, défis, nutrition, cycle, Panthéon) et en supprimant les sports variés (padel, escalade, natation, volley…), remplacés par un **onglet Cardio complet** (course, vélo, corde, rameur, HIIT, marche).
 
-**Un seul principe : tout ce que tu bouges, quel que soit le sport, se suit dans une seule app.**
+> Les données de la v3 sont abandonnées automatiquement au premier lancement : l'app repart d'un onboarding vierge.
 
-## Écrans
+## Les 3 piliers
 
-- ⚡ **Aujourd'hui** : streak 🔥 + 7 derniers jours (bouton **😴 Jour de repos** : le jour compte comme objectif atteint et garde la streak), **carte Objectifs** à gros chiffres (**objectif du jour = 1 séance**, statut hebdo en secondaire, objectif principal, bouton ✏️ vers Profil), 🎯 **défi du jour** (bouton **✓ Valider** manuel même pour les défis auto), humeur du jour (5 émojis), raccourcis de tes sports favoris **avec ton rang affiché**, gros bouton « ＋ Nouvelle activité », dernières activités
-- 🏋️ **Muscu & Street workout** : la séance depuis Aujourd'hui liste **tous les exercices de la discipline** (kg / rép / séries par exo) et enregistre automatiquement chaque charge dans Progrès ; détection auto des records
-- 🏃 **Tous les sports** (course, vélo, natation, padel, 🏐 volley, escalade, rando, foot, HIIT, maison, + sports custom) : séance avec durée, distance, exercices minutés (total auto) et note — **durée et distance enregistrées automatiquement pour tous les exercices du sport** dans Progrès
-- ⭐ **Avis sur la séance** : à chaque enregistrement, note de 1 à 5 étoiles
-- 🎯 **Défis** : défi du jour (10 défis généraux + défis quotidiens par sport, validable manuellement) + défi par sport (2 séances/semaine) → 💎
-- 📈 **Progrès** : heatmap 16 semaines, minutes/semaine, répartition par sport, **⚖️ Mon poids** (pesée + courbe), **📈 Progression exercice** (sport → exo → mesure : poids, reps, temps, vitesse km/h, distance, séries ; toutes les mesures)
-- 🍽️ **Nutrition** : calculateur Mifflin-St Jeor + 3 modes (🥘 assiettes-types, 🍽️ plats pesés en g ou en assiettes, ⌨️ direct) + eau 💧
-- 🏋️ **Exos** : listes d'exercices **cohérentes et dédupliquées** par discipline (21 en muscu, dont curl biceps ; natation corrigée), échauffement/exercices/étirements cochables, **📊 Mesurer** sur chaque exo (kg, reps, séries, temps mm:ss, distance → vitesse km/h auto, note), exos personnalisés créables/modifiables/supprimables. Chaque mesure compte comme une séance (streak/badges)
-- 🌙 **Cycle** (profils femme) : phase du jour + conseil, calendrier prévisionnel mensuel (‹ ›), humeur par jour, réglages + historique
-- 👤 **Profil** : identité + IMC, objectifs globaux et par sport, résumé des **rangs** par sport, sports favoris + création, **thème & couleurs** (accents, 6 duos, couleurs libres), export/import JSON, multi-comptes
-- 🏛️ **Panthéon** (nouvel onglet) : quête de l'Olympe — **50 badges par sport** (10 séances de 10 à 100, 10 régularité streak + hebdo, 10 charge de travail adaptée au sport, 20 insignes de rang), **5 rangs grecs** (Éphèbe · Guerrier · Héros · Demi-dieu · Olympien, +1 rang tous les 10 badges), **rang Olympe global** (13 dieux éveillés à chaque sport finalisé 50/50, thème Or au complet), liste des 💎 gagnés. Anciens badges réinitialisés une seule fois (migration `badgeV2`)
+- 🔥 **Streak** — 1 séance (muscu ou cardio) valide le jour. Le bouton 😴 « Jour de repos » protège la série. Bandeau des 7 derniers jours, record personnel.
+- 🏋️ **Musculation** — liste d'exercices avec **kg / répétitions / séries**, programmes guidés **Push / Pull / Legs / Full body** (fixes mais modifiables), séance libre, ajout d'exos à la volée, note et avis ⭐. Chaque charge est enregistrée automatiquement dans Progrès, avec détection des records.
+- 🏃 **Cardio** — onglet complet : course, vélo, corde, rameur, HIIT/Tabata, marche rapide. Durée, distance (ou nombre de tours), note, avis, historique et records par mode.
+
+## Écrans secondaires
+
+- 📈 **Progrès** — heatmap 16 semaines, minutes sur 7 jours, répartition muscu/cardio, pesée + courbe de poids + IMC, exploration de toutes les mesures par sport → exo → mesure avec courbe.
+- 📋 **Exercices** — catalogue coché (échauffement / exercices / étirements), bouton **📊 Mesurer** (kg, reps, séries, temps, distance, vitesse) qui enregistre la mesure **et** compte comme séance, exos personnalisés (CRUD).
+- 🍽️ **Nutrition** — Mifflin-St Jeor (+ variantes sèche/prise), 3 modes de saisie (assiettes, plats pesés, direct), compteur d'eau.
+- 🎯 **Défis** — défi du jour, validation manuelle, **+1 💎 par défi** (une seule fois par défi, pas de ferme).
+- 🛍️ **Boutique** (menu ☰) — cosmétiques achetés avec les gems, **aucun avantage sportif** : styles de flamme de streak, titres à côté du prénom, cadres de profil, bannières de profil (12 objets, 8–18 💎). Acheter équipe automatiquement ; chaque catégorie peut être retirée. **Vrais effets visuels** : flamme qui vacille avec étincelles montantes, cadre à bordure conique qui tourne, titre avec balayage lumineux, bannière animée (haze/dégradé mobile, pulsation néon), et bursts de particules 💎/✨/🌿/⚡ à la validation d'un défi, à l'achat et à l'enregistrement d'une séance. `prefers-reduced-motion` désactive les animations.
+- 🌙 **Cycle** — uniquement pour les profils femme : phase du jour, conseil, calendrier mensuel, réglages.
+- 🏛️ **Panthéon** — **20 badges dessinés en SVG par discipline** (or & laurier), répartis en 5 catégories de conditions : séances, streak, volume (kg soulevés / km cumulés), records/PR et régularité hebdo. 5 rangs grecs (Éphèbe → Olympien à 20 badges), dieux éveillés quand les deux disciplines atteignent Olympien.
+- 👤 **Profil** — identité, IMC, rythme hebdo, récap des rangs, thème clair/sombre, couleur d'accent (8 swatches, 6 duos, couleur libre), export/import JSON, multi-comptes.
+
+L'avatar par défaut est une **silhouette vectorielle** (plus d'emoji 👤). Les 12 cosmétiques sont illustrés par des **photos réalistes importées localement** dans `assets/` (sources Pexels, voir `assets/CREDITS.md`). La **bannière photo est affichée en haut de tous les écrans** (en haut de la page, elle défile avec le contenu — pas de sticky —, clic → Profil). Le cadre laurier est une **couronne de laurier dorée dessinée en SVG** autour du compte. La bannière Temple montre un **vrai temple grec au coucher de soleil**.
+
+**Photo de profil** : dans Profil, choix parmi 3 photos importées ou **import de sa propre photo** (redimensionnée en 256×256 via canvas, stockée en localStorage, aucun envoi réseau), plus retour à la silhouette.
+
+Les animations CSS (flamme, cadres, titres, sweeps) restent appliquées par-dessus. Navigation basse sur 5 entrées (Jour / Muscu / ＋ / Cardio / Progrès) ; le menu ☰ donne accès aux écrans secondaires.
+
+## Compte démo 🎮
+
+Le sélecteur de comptes (👤) contient un bouton **« Compte démo — tout débloqué »** : il crée et ouvre un compte `demo` rempli (21 jours d'activité, records, poids, défis validés, 99 💎, **les 12 cosmétiques possédés**, badges calculés). Pratique pour tester toute l'appli sans attendre les déblocages. Supprimable comme un compte normal.
 
 ## Design
 
-Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** réservée aux actions/progression. Mode clair complet en miroir (toute couleur a ses 2 déclinaisons dans les tokens), avec thèmes/duos et couleurs personnalisables. **DA Olympe limitée au Panthéon, aux badges et aux rangs** : or `#f3c969`, marbre, laurier, éclairs, avec déclinaisons dark/light dans les tokens `--ol-*`. Navigation bas de page, cibles ≥ 44 px, gros chiffres, français tutoyé.
+Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** réservé aux actions et à la progression. Mode clair complet en miroir ; l'accent est automatiquement assombri en clair pour garder le contraste, et la couleur du texte d'action est choisie d'après la luminance WCAG. DA Olympe limitée au Panthéon, aux badges et aux rangs. Cibles tactiles ≥ 44 px, français tutoyé.
 
 ## Contraintes (à respecter pour toute modification)
 
 1. Tout dans `index.html` — pas de fichiers CSS/JS séparés, zéro dépendance
 2. Zéro backend, données en localStorage (`el-v1:<compte>`), comptes dans `sg-accounts`
-3. Toute nouvelle couleur a sa déclinaison light **et** dark dans les blocs de tokens
-4. **Incrémenter `CACHE` dans `sw.js` à chaque modification de contenu** (actuellement `elan-v26`) — la page est network-first (avec `cache:"no-store"` pour éviter les 304 qui masqueraient une nouvelle version) mais retombe sur le cache si la réponse n'est pas `ok` (sinon une 502 masque l'offline)
-5. Cibles tactiles ≥ 44 px
-6. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"` (géré dans `renderAll` + handler `pOk`)
+3. Version de données `v:4` — toute structure plus ancienne déclenche une remise à zéro
+4. Toute nouvelle couleur a sa déclinaison light **et** dark dans les tokens
+5. **Incrémenter `CACHE` dans `sw.js` à chaque modification** (actuellement `elan-v40`) — la page est network-first avec `cache:"no-store"` pour éviter les 304 masquant une nouvelle version, mais retombe sur le cache si la réponse n'est pas ok
+6. Cibles tactiles ≥ 44 px
+7. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"`
 
 ## Test local
 
@@ -38,4 +52,21 @@ python -m http.server 8000
 # → http://localhost:8000
 ```
 
-Checklist : compte → onboarding 4 étapes (rythme par sport) → activité (muscu + sport durée, avis ⭐) → défi du jour + humeur → nutrition → exos → cycle femme (masqué pour les autres) → poids + charges dans Progrès → **Panthéon** (50 badges/sport, rangs, dieux) → Profil (rangs, thèmes/duos) → dark/light → reload (persistance) → offline (couper le serveur, recharger).
+Checklist : onboarding → séance muscu (kg/reps/séries + ⭐) → séance cardio (durée + distance) → streak + jour de repos → défi + humeur → mesure d'exo → poids → Progrès (heatmap, courbes) → Exos perso → Nutrition → Défis → Panthéon → Profil (thèmes, couleurs, export/import, comptes) → dark/light → reload (persistance) → offline (couper le serveur, recharger).
+
+## Audit (5 reviewers, nov. 2026)
+
+Audit croisé **code / sécurité / UI-accessibilité / QA fonctionnelle / perf-propreté**, puis corrections appliquées :
+
+- **Records** : la détection comparait des champs inexistants → chaque mesure était un record. Désormais, une record n'est compté que s'il bat une mesure **antérieure** du même exo (la 1ʳᵉ mesure sert de référence).
+- **Streak** : le jour en cours non validé ne fait plus tomber la série à 0.
+- **Import / stockage** : schéma strict (`sanitizeData()`), limite 2 Mo, reconstruction d'un objet propre, whitelist des badges/cosmétiques, `safeGet/safeSet` avec `try/catch` → plus de XSS ni d'écran blanc sur fichier corrompu.
+- **Migration v4** : ne supprime plus que les comptes réellement anciens.
+- **Navigation** : le « ＋ » central ouvre bien « Nouvelle activité », le menu « Changer de compte » ouvre le sélecteur.
+- **Cardio** : durée/distance/tours conservés lors d'un redessin ; champ tours enfin éditable en HIIT/corde.
+- **Compte démo** : le bouton rouvre la démo existante au lieu de l'écraser.
+- **Panthéon** : faute de frappe `olymppe` corrigée → la DA or/laurier s'applique de nouveau.
+- **Contraste clair** : token `--ac-text` dédié au foreground (le fond lime reste inchangé), `--dim` renforcé, `--ol-shine` pour les rangs.
+- **ARIA / tactile** : `role=dialog`, focus, `aria-live`, `aria-pressed`, `aria-current`, cibles ≥ 44 px, `:focus-visible`.
+- **SW** : same-origin, pas de fallback HTML sur les assets, purge limitée aux caches `elan-`, installation tolérante, revalidation en arrière-plan.
+- **Divers** : suppression des records fantômes, compteur d'eau quotidien, vocabulaire de mesures unifié, validation des bornes profil, manifest v4, OG tags, `.gitattributes`, suppression du code mort.

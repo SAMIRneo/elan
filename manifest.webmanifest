@@ -1,7 +1,7 @@
 {
   "name": "Élan – carnet sportif",
   "short_name": "Élan",
-  "description": "Ton carnet sportif multi-sport, 100 % privé. Muscu, course, vélo, natation… tout suit dans une seule app.",
+  "description": "Élan — muscu, cardio, streak. Ton carnet d'entraînement 100 % local : charges, séries, distance, badges et cosmétiques.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
