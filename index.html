@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; script-src-attr 'none'; object-src 'none'; base-uri 'none'; connect-src 'self'">
 <meta name="theme-color" content="#0a0a0c">
 <title>Élan ⚡ — muscu, cardio, streak</title>
 <meta property="og:title" content="Élan ⚡ — muscu, cardio, streak">
@@ -72,11 +73,11 @@ nav#nav{position:fixed;left:0;right:0;bottom:0;z-index:50;background:color-mix(i
 .muted{color:var(--mut)}.dim{color:var(--dim)}.tiny{font-size:12px}.small{font-size:13px}
 .ac{color:var(--ac-text)}.ok{color:var(--ok)}.wa{color:var(--wa)}.bad{color:var(--bad)}
 .center{text-align:center}
-.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:6px 11px;background:var(--card2);border:1px solid var(--line);font-size:12px;font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:6px 11px;background:var(--card2);border:1px solid color-mix(in srgb,var(--line) 60%,var(--ol-gold) 40%);font-size:12px;font-weight:700}
 .pill.ac{background:var(--ac-soft);border-color:transparent;color:var(--ac-text)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:46px;padding:0 16px;border-radius:14px;background:var(--card2);border:1px solid var(--line);font-weight:800;font-size:14px}
 .btn:active{transform:scale(.97)}
-.btn.pri{background:var(--ac);color:var(--ac-tx);border-color:transparent}
+.btn.pri{background:var(--ac);color:var(--ac-tx);border-color:var(--ol-gold)}
 .btn.gh{background:transparent}
 .btn.sm{min-height:44px;padding:0 12px;font-size:12px;border-radius:11px}
 .btn.block{width:100%}
@@ -150,7 +151,9 @@ input[type=range]{width:100%;accent-color:var(--ac)}
 .shop-ic::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.42));pointer-events:none}
 .shop-item.owned .shop-ic{border-color:color-mix(in srgb,var(--ol-gold) 65%,transparent);box-shadow:0 0 12px color-mix(in srgb,var(--ol-gold) 22%,transparent)}
 .gempill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:5px 10px;background:var(--card);border:1px solid var(--line);font-size:12px;font-weight:900;color:var(--ol-gold)}
-.ttag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:linear-gradient(120deg,var(--ol-gold),#fff2c4);color:#241a06;vertical-align:middle;margin-left:6px}
+.ttag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;padding:5px 13px;min-height:20px;border-radius:999px;background:url('assets/title-plaque-gold.svg') center/100% 100% no-repeat;color:#2a1b03;text-shadow:0 1px 0 rgba(255,250,220,.75);vertical-align:middle;margin-left:6px}
+.ttag.tt-streak{background-image:url('assets/title-plaque-ice.svg');color:#0a2b45;text-shadow:0 1px 0 rgba(255,255,255,.8)}
+.ttag.tt-olympe{background-image:url('assets/title-plaque-olympe.svg')}
 .avatar{width:44px;height:44px;border-radius:14px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;font-size:22px;flex:none}
 .avatar.lg{width:60px;height:60px;border-radius:18px;font-size:30px}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block;border-radius:14px}
@@ -163,9 +166,9 @@ input[type=range]{width:100%;accent-color:var(--ac)}
 .avatarpick.silhouette{color:var(--mut)}
 .avatarpick.silhouette .avatar{border:0;width:36px;height:36px}
 .avatarpick.silhouette .avatar::before{display:none}
-.avatar.frame-gold{border:2px solid var(--ol-gold);box-shadow:0 0 0 2px color-mix(in srgb,var(--ol-gold) 22%,transparent),0 0 14px color-mix(in srgb,var(--ol-gold) 30%,transparent)}
+.avatar.frame-gold{border:1px solid color-mix(in srgb,var(--ol-gold) 60%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--ol-gold) 22%,transparent)}
 .avatar.frame-laurel{border:2px solid var(--ol-laurel);box-shadow:0 0 0 3px color-mix(in srgb,var(--ol-laurel) 28%,transparent)}
-.avatar.frame-volt{border:2px solid var(--ac);box-shadow:0 0 0 2px var(--ac-soft),0 0 16px var(--ac)}
+.avatar.frame-volt{border:1px solid rgba(204,255,0,.55);box-shadow:0 0 16px rgba(204,255,0,.35)}
 button.banner{display:block;width:calc(100% + 28px);padding:0;text-align:left;cursor:pointer}
 .banner{height:82px;border-radius:0 0 18px 18px;position:relative;overflow:hidden;margin:0 -14px 12px;border-bottom:1px solid var(--line)}
 .banner::after{content:'';position:absolute;inset:0;opacity:.25}
@@ -178,6 +181,7 @@ button.banner{display:block;width:calc(100% + 28px);padding:0;text-align:left;cu
 /* ============ EFFETS VISUELS ============ */
 .flame{position:relative;display:grid;place-items:center;width:64px;height:64px;flex:none;font-size:54px;line-height:1;filter:drop-shadow(0 4px 12px rgba(204,255,0,.25))}
 .flame-fx{position:relative;display:block;width:54px;height:54px}
+.flame-fx::before{content:'';position:absolute;inset:-9px;border-radius:50%;background:radial-gradient(circle,var(--fglow) 0%,transparent 68%);opacity:.45;pointer-events:none;animation:neonPulse 1.6s ease-in-out infinite alternate}
 .flame-fx svg{display:block;transform-origin:50% 85%;animation:flick 1.5s ease-in-out infinite alternate;filter:drop-shadow(0 0 9px var(--fglow))}
 @keyframes flick{
   0%{transform:scale(1) skewX(0) rotate(-2deg);filter:drop-shadow(0 0 7px var(--fglow))}
@@ -194,13 +198,15 @@ button.banner{display:block;width:calc(100% + 28px);padding:0;text-align:left;cu
 .avatar{position:relative}
 .avatar::before{content:'';position:absolute;inset:-6px;border-radius:19px;padding:3px;pointer-events:none;opacity:0}
 .avatar.lg::before{inset:-9px;border-radius:26px}
-.avatar.frame-gold::before{opacity:1;background:conic-gradient(from 0deg,#a86b12,#fff2c4,#f3c969,#fff2c4,#a86b12);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 4s linear infinite}
+.avatar.frame-gold::before{opacity:1;inset:-10px;border-radius:0;padding:0;background:url('assets/frame-gold-ring.svg') center/contain no-repeat;-webkit-mask:none;mask:none;animation:goldGlow 3s ease-in-out infinite alternate;filter:drop-shadow(0 0 4px rgba(243,201,105,.45))}
+.avatar.lg.frame-gold::before{inset:-14px}
+@keyframes goldGlow{from{filter:drop-shadow(0 0 3px rgba(243,201,105,.3))}to{filter:drop-shadow(0 0 11px rgba(243,201,105,.7))}}
 .avatar.frame-laurel::before{opacity:1;inset:-17px;border-radius:0;padding:0;background:url('assets/laurel-gold.svg') center/contain no-repeat;-webkit-mask:none;mask:none;animation:laurelGlow 3s ease-in-out infinite alternate;filter:drop-shadow(0 0 5px rgba(243,201,105,.5))}
 .avatar.lg.frame-laurel::before{inset:-24px}
 @keyframes laurelGlow{from{filter:drop-shadow(0 0 3px rgba(243,201,105,.25))}to{filter:drop-shadow(0 0 10px rgba(243,201,105,.65))}}
-.avatar.frame-volt::before{opacity:1;background:conic-gradient(from 0deg,transparent,var(--ac),transparent,var(--ac),transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 2.4s linear infinite,volt 1.5s ease-in-out infinite alternate}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes volt{from{filter:drop-shadow(0 0 2px var(--ac))}to{filter:drop-shadow(0 0 9px var(--ac))}}
+.avatar.frame-volt::before{opacity:1;inset:-10px;border-radius:0;padding:0;background:url('assets/frame-volt-ring.svg') center/contain no-repeat;-webkit-mask:none;mask:none;animation:volt 1.5s ease-in-out infinite alternate}
+.avatar.lg.frame-volt::before{inset:-14px}
+@keyframes volt{from{filter:drop-shadow(0 0 2px rgba(204,255,0,.65))}to{filter:drop-shadow(0 0 9px rgba(204,255,0,1))}}
 /* titres avec balayage lumineux */
 .ttag{position:relative;overflow:hidden}
 .ttag::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.85) 50%,transparent 70%);transform:translateX(-130%);animation:shine 3.6s ease-in-out infinite}
@@ -224,12 +230,12 @@ button.banner{display:block;width:calc(100% + 28px);padding:0;text-align:left;cu
 /* bas de gamme / petit écran : on garde l'identité, on coupe le superflu */
 @media (max-width:480px){
   .sp{display:none}
-  .avatar::before,.ttag::after,.banner::before,.banner::after{animation:none!important}
+  .avatar::before,.flame-fx::before,.ttag::after,.banner::before,.banner::after{animation:none!important}
   .flame-fx svg,.flame-fx.fx-rainbow svg{animation:flick 2.2s ease-in-out infinite alternate}
   .banner::before{opacity:.4}
 }
 @media (prefers-reduced-motion:reduce){
-  .flame-fx svg,.sp,.avatar::before,.ttag::after,.banner::before,.banner::after,.pt,.sheet,.btn,.icobtn,.nb.add i{animation:none!important;transition:none!important}
+  .flame-fx svg,.flame-fx::before,.sp,.avatar::before,.ttag::after,.banner::before,.banner::after,.pt,.sheet,.btn,.icobtn,.nb.add i{animation:none!important;transition:none!important}
   .sp{display:none}
 }
 /* ============ MISC ============ */
@@ -247,9 +253,6 @@ button.banner{display:block;width:calc(100% + 28px);padding:0;text-align:left;cu
 .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);z-index:200;background:var(--tx);color:var(--bg);padding:12px 20px;border-radius:14px;font-weight:800;font-size:14px;opacity:0;pointer-events:none;transition:.25s;box-shadow:var(--sh);max-width:90vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%)}
 .hidden{display:none!important}
-.swatches{display:flex;flex-wrap:wrap;gap:8px}
-.sw{width:44px;height:44px;border-radius:12px;border:3px solid transparent}
-.sw.on{border-color:var(--tx)}
 .rec{border-left:3px solid var(--ac);padding-left:10px;margin:8px 0}
 </style>
 </head>
@@ -335,16 +338,30 @@ const DEF_PROGRAMS=[
   {id:'full',nom:'Full body',ic:'💪',exos:['squat','dev-couch','tirage-lat','dev-mil','curl-biceps','planche']}
 ];
 const DEFIS=[
-  {id:'d1',t:'Fais 20 pompes',ic:'💪'},
-  {id:'d2',t:'Planche 60 secondes',ic:'🧱'},
-  {id:'d3',t:'30 squats',ic:'🦵'},
-  {id:'d4',t:'Course de 15 minutes',ic:'🏃'},
-  {id:'d5',t:'Corde à sauter 5 min',ic:'🪢'},
-  {id:'d6',t:'50 crunchs',ic:'🔥'},
-  {id:'d7',t:'Dips jusqu’à l’échec',ic:'💥'},
-  {id:'d8',t:'Gainage 45 sec de chaque côté',ic:'⚡'},
-  {id:'d9',t:'HIIT de 10 minutes',ic:'🥵'},
-  {id:'d10',t:'Étirements 10 minutes',ic:'🧘'}
+  {id:'d1',t:'Fais 20 pompes',ic:'💪',d:'2 séries de 10, poitrine et triceps.'},
+  {id:'d2',t:'Planche 60 secondes',ic:'🧱',d:'Gainé, dos droit, coudes sous les épaules.'},
+  {id:'d3',t:'30 squats',ic:'🦵',d:'Descends à angle droit, genoux dans l’axe des pieds.'},
+  {id:'d4',t:'Course de 15 minutes',ic:'🏃',d:'Allure tranquille : tu dois pouvoir parler.'},
+  {id:'d5',t:'Jumping jacks 3 min',ic:'⭐',d:'Étoiles sautées : bras et jambes ensemble.'},
+  {id:'d6',t:'50 crunchs',ic:'🔥',d:'Petits mouvements, bas du dos au sol.'},
+  {id:'d7',t:'Pont fessier 3 × 15',ic:'💥',d:'Allongé, soulève les hanches en serrant les fessiers.'},
+  {id:'d8',t:'Gainage 45 sec de chaque côté',ic:'⚡',d:'Planche latérale, hanches bien hautes.'},
+  {id:'d9',t:'HIIT de 10 minutes',ic:'🥵',d:'30 s d’effort intense puis 30 s de repos, à répéter.'},
+  {id:'d10',t:'Étirements 10 minutes',ic:'🧘',d:'Doucement, 20 à 30 secondes par posture.'},
+  {id:'d11',t:'Burpees × 10',ic:'🤸',d:'Squat → planche → pompe → saut, enchaîné.'},
+  {id:'d12',t:'Montées de genoux 3 min',ic:'🦿',d:'Genoux hauts, rythme soutenu sur place.'},
+  {id:'d13',t:'Fentes 12 par jambe',ic:'🚶',d:'Un pas en avant, genou arrière vers le sol.'},
+  {id:'d14',t:'Sauts latéraux 3 min',ic:'↔️',d:'Saute de gauche à droite, atterris souplement.'},
+  {id:'d15',t:'Nage en sec 3 min',ic:'🌊',d:'Allongé sur le ventre, alterne bras et jambes.'},
+  {id:'d16',t:'Superman 3 × 15',ic:'🦸',d:'Allongé, lève bras et jambes sans cambrer.'},
+  {id:'d17',t:'Wall sit 60 secondes',ic:'🧱',d:'Dos au mur, cuisses horizontales.'},
+  {id:'d18',t:'Marche rapide 20 min',ic:'🏃‍♀️',d:'Allure soutenue, bras qui balancent.'},
+  {id:'d19',t:'Pompes diamant × 15',ic:'💎',d:'Mains proches l’une de l’autre, cible triceps.'},
+  {id:'d20',t:'100 sauts sur place',ic:'🪢',d:'Petits sauts légers, récupère si besoin.'},
+  {id:'d21',t:'Tabata 4 minutes',ic:'🔥',d:'8 séries de 20 s d’effort / 10 s de repos.'},
+  {id:'d22',t:'Mobilité épaules 5 min',ic:'🤹',d:'Cercles de bras et rotations lentes.'},
+  {id:'d23',t:'Squat jump × 12',ic:'🦵',d:'Squat puis saut, atterris souplement.'},
+  {id:'d24',t:'Planche 2 minutes',ic:'⏱️',d:'Version longue : respire sans bouger.'}
 ];
 const RANGS=[
   {n:'Éphèbe',min:0},{n:'Guerrier',min:5},{n:'Héros',min:10},{n:'Demi-dieu',min:20}
@@ -377,27 +394,47 @@ const SHOP=[
   {id:'banner-neon',cat:'banner',nom:'Bannière Néon',ic:'🌃',img:'assets/cos-banner-neon.jpg',price:18,desc:'Lumière électrique'}
 ];
 const SHOP_CATS=[['flame','🔥 Flammes de streak'],['title','🏷️ Titres'],['frame','🖼️ Cadres de profil'],['banner','🎨 Bannières']];
+const THEMES=[
+  {n:'Rouge & or',d:{bg:'#0a0a0c',ac:'#e63946'},l:{bg:'#fbf7ef',ac:'#a51e2c'}},
+  {n:'Marbre & or',d:{bg:'#14110b',ac:'#f3c969'},l:{bg:'#f7f2e5',ac:'#8a6614'}},
+  {n:'Nuit étoilée',d:{bg:'#0a1020',ac:'#7aa2ff'},l:{bg:'#eef2fb',ac:'#3559a8'}},
+  {n:'Pourpre royal',d:{bg:'#140b1c',ac:'#c084fc'},l:{bg:'#f7eefb',ac:'#7c3aed'}},
+  {n:'Émeraude',d:{bg:'#0b1512',ac:'#34d399'},l:{bg:'#eef7f1',ac:'#12805c'}},
+  {n:'Acier',d:{bg:'#101820',ac:'#00e5ff'},l:{bg:'#eef2f7',ac:'#007a8c'}}
+];
 const SHOP_IDS=new Set(SHOP.map(x=>x.id));
 function shopItem(id){return SHOP.find(x=>x.id===id)}
-function equipped(cat){return D.cosmetics?.equipped?.[cat]||''}
+function equipped(cat){return D?.cosmetics?.equipped?.[cat]||''}
 function flameHTML(){
   const s=equipped('flame');
   if(!s||s==='classic')return '🔥';
   const key=s.replace('flame-','');
   const cols={gold:['#fff3c4','#f3c969','#a86b12'],ice:['#e0f7ff','#60a5fa','#1e40af'],rainbow:['#ff4d6d','#ffd166','#4ade80','#60a5fa','#c084fc']}[key]||[];
-  if(!cols.length)return '🔥';
-  const stops=cols.map((c,i)=>`<stop offset="${Math.round(i/(cols.length-1)*100)}%" stop-color="${c}"/>`).join('');
+  const photo={gold:'assets/cos-flame-gold.jpg',ice:'assets/cos-flame-ice.jpg',rainbow:'assets/cos-flame-rainbow.jpg'}[key];
+  if(!cols.length||!photo)return '🔥';
   const glow=cols[Math.floor(cols.length/2)];
+  const label=shopItem(s)?.nom||key;
+  const shape='M16 2c5 6 8 10 8 15a8 8 0 1 1-16 0c0-4 2-7 4-9 0 3 1.5 5 3 5 1-4 1-7 1-11z';
   const sparks=[0,1,2,3,4].map(i=>`<i class="sp s${i+1}" style="--sc:${cols[i%cols.length]};--dx:${(i%2?1:-1)*(8+i*5)}px"></i>`).join('');
   return `<span class="flame-fx fx-${key}" style="--fglow:${glow}88">
-    <svg width="54" height="54" viewBox="0 0 32 32"><defs><linearGradient id="fl" x1="0" y1="1" x2="0" y2="0">${stops}</linearGradient></defs>
-    <path d="M16 2c5 6 8 10 8 15a8 8 0 1 1-16 0c0-4 2-7 4-9 0 3 1.5 5 3 5 1-4 1-7 1-11z" fill="url(#fl)"/></svg>${sparks}</span>`;
+    <svg width="54" height="54" viewBox="0 0 32 32" role="img" aria-label="${esc(label)}">
+      <defs>
+        <clipPath id="fc-${key}"><path d="${shape}"/></clipPath>
+        <linearGradient id="fs-${key}" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0" stop-color="#000" stop-opacity=".5"/>
+          <stop offset=".5" stop-color="#000" stop-opacity="0"/>
+          <stop offset="1" stop-color="#fff" stop-opacity=".3"/>
+        </linearGradient>
+        <filter id="fb-${key}"><feGaussianBlur stdDeviation=".8"/></filter>
+      </defs>
+      <image href="${photo}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" clip-path="url(#fc-${key})"/>
+      <path d="${shape}" fill="url(#fs-${key})"/>
+      <path d="M16 9c2.4 3.4 3.6 5.6 3.6 8.2a3.6 3.6 0 0 1-7.2 0c0-2.2 1-4.2 3.6-7z" fill="#fff8dc" opacity=".35" filter="url(#fb-${key})"/>
+    </svg>${sparks}</span>`;
 }
-function titleHTML(){const id=equipped('title'),it=id&&shopItem(id);return it?`<span class="ttag">${esc(it.nom)}</span>`:''}
+function titleHTML(){const id=equipped('title'),it=id&&shopItem(id);return it?`<span class="ttag tt-${id.replace('title-','')}">${esc(it.nom)}</span>`:''}
 function avatarOptions(){
-  const own=(D.profile?.photos||[]).map((src,i)=>({src,label:`Ma photo ${i+1}`,own:i}));
-  const presets=[1,2,3].map(i=>({src:`assets/cos-avatar-${i}.jpg`,label:`Avatar ${i}`}));
-  return [...own,...presets];
+  return (D.profile?.photos||[]).map((src,i)=>({src,label:`Ma photo ${i+1}`,own:i}));
 }
 function avatarHTML(size){
   const f=equipped('frame'),ph=D.profile?.photo;
@@ -406,41 +443,6 @@ function avatarHTML(size){
       <circle cx="12" cy="8.2" r="4.1" fill="currentColor"/>
       <path d="M3.8 21c0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2z" fill="currentColor"/>
     </svg>`}</div>`;
-}
-
-/* ============ COMPTE DÉMO ============ */
-function demoData(){
-  const d=blank();
-  d.created=dayAdd(ymd(),-30);
-  d.profile={...d.profile,prenom:'Alex',age:28,taille:178,poids:78,objectif:'Progresser',rythme:{muscu:4,cardio:3}};
-  const modes=['course','velo','corde','rameur','hiit'];
-  const ids=['dev-couch','squat','tirage-lat','dev-mil','curl-biceps','leg-press'];
-  let kg=60;
-  for(let i=20;i>=0;i--){
-    const date=dayAdd(ymd(),-i);
-    if(i%3!==0){
-      const id=ids[i%ids.length],e=MUSCU_EXOS.find(x=>x.id===id)||{nom:'Développé couché'};
-      kg+=1;
-      const item={id,nom:e.nom,kg,reps:8+(i%3),series:4};
-      d.activities.push({id:uid(),date,type:'muscu',program:i%2?'Push':'Pull',exos:[item],note:'',avis:4,duree:50});
-      d.measurements.push({id:uid(),date,sport:'muscu',exo:e.nom,mesure:'kg',valeur:kg});
-      d.measurements.push({id:uid(),date,sport:'muscu',exo:e.nom,mesure:'répétitions',valeur:item.reps});
-      d.measurements.push({id:uid(),date,sport:'muscu',exo:e.nom,mesure:'séries',valeur:4});
-      d.records.push({date,exo:e.nom,mesure:'kg',valeur:kg});
-    }else{
-      const m=modes[(i/3|0)%modes.length],cfg=CARDIO.find(c=>c.id===m);
-      d.activities.push({id:uid(),date,type:'cardio',mode:m,duree:30+(i%4)*5,distance:cfg.dist?5+(i%5):0,tours:0,note:'',avis:5});
-    }
-  }
-  for(let i=7;i>=0;i--)d.weights.push({date:dayAdd(ymd(),-i*3),kg:Math.round((80-(7-i)*.35)*10)/10});
-  for(let i=0;i<14;i++){
-    const date=dayAdd(ymd(),-i),ch=DEFIS[i%DEFIS.length];
-    d.challenges[date]=[ch.id];d.gemLog.push({date,id:ch.id});
-  }
-  d.nutrition={eau:5,mode:'assiettes',repas:[{id:uid(),date:ymd(),label:'Poulet riz légumes',cal:620}]};
-  d.cosmetics={owned:SHOP.map(x=>x.id),equipped:{flame:'flame-rainbow',title:'title-olympe',frame:'frame-volt',banner:'banner-neon'}};
-  d.gems=99;d.streak={best:21,rest:[]};
-  return d;
 }
 
 /* ============ ÉTAT ============ */
@@ -452,7 +454,7 @@ function blank(){
     activities:[],weights:[],customExos:[],programs:JSON.parse(JSON.stringify(DEF_PROGRAMS)),
     measurements:[],records:[],moods:{},challenges:{},nutrition:{eau:0,eauDate:ymd(),repas:[],mode:'assiettes'},
     cycle:{debut:'',longueur:28,regles:5},
-    badges:[],settings:{theme:'dark',bg:'#0a0a0c',accent:'#ccff00'},
+    badges:[],settings:{theme:'dark',pal:{dark:{bg:'#0a0a0c',ac:'#e63946'},light:{bg:'#fbf7ef',ac:'#a51e2c'}}},
     streak:{best:0,rest:[]},
     gems:0,gemLog:[],cosmetics:{owned:[],equipped:{flame:'classic',title:'',frame:'',banner:''}}
   };
@@ -468,7 +470,7 @@ function safeSet(k,v){
 function sanitizeData(o){
   if(!o||typeof o!=='object'||Array.isArray(o)||o.v!==4||!o.profile||typeof o.profile!=='object')return null;
   const d=blank();
-  const S=(v,n=120)=>typeof v==='string'?v.slice(0,n):'';
+  const S=(v,n=120)=>typeof v==='string'?v.slice(0,n).replace(/[<>"`]/g,''):'';
   const N=(v,def,min,max)=>{const x=Number(v);return Number.isFinite(x)?clamp(x,min,max):def};
   const A=v=>Array.isArray(v)?v.slice(0,4000):[];
   const Dt=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v:ymd();
@@ -506,7 +508,10 @@ function sanitizeData(o){
   const validBadges=new Set(badgeDefs().map(b=>b.id));
   d.badges=A(o.badges).map(String).filter(x=>validBadges.has(x));
   const s=o.settings||{};
-  d.settings={theme:s.theme==='light'?'light':'dark',bg:/^#[0-9a-f]{6}$/i.test(s.bg)?s.bg:(s.theme==='light'?'#f4f5f2':'#0a0a0c'),accent:/^#[0-9a-f]{6}$/i.test(s.accent)?s.accent:'#ccff00'};
+  const hex=v=>/^#[0-9a-f]{6}$/i.test(v)?v:'';
+  const inPal=s.pal||{},legacyBg=hex(s.bg)||'#0a0a0c',legacyAc=hex(s.accent)||'#e63946';
+  const mkPal=(p,fb)=>({bg:hex(p?.bg)||fb.bg,ac:hex(p?.ac)||fb.ac});
+  d.settings={theme:s.theme==='light'?'light':'dark',pal:{dark:mkPal(inPal.dark,{bg:legacyBg,ac:legacyAc}),light:mkPal(inPal.light,THEMES[0].l)}};
   const st=o.streak||{};
   d.streak={best:N(st.best,0,0,10000),rest:A(st.rest).map(Dt).slice(0,1000)};
   d.gems=N(o.gems,0,0,1000000);
@@ -516,7 +521,8 @@ function sanitizeData(o){
   const eq=cos.equipped||{};
   for(const cat of ['flame','title','frame','banner']){
     const v=S(eq[cat],40);
-    d.cosmetics.equipped[cat]=cat==='flame'?(v==='classic'||d.cosmetics.owned.includes(v)?v:'classic'):(d.cosmetics.owned.includes(v)?v:'');
+    const ok=d.cosmetics.owned.includes(v)&&shopItem(v)?.cat===cat;
+    d.cosmetics.equipped[cat]=cat==='flame'?(v==='classic'||ok?v:'classic'):(ok?v:'');
   }
   d.checked={};for(const k of Object.keys(o.checked||{}))if(typeof o.checked[k]==='boolean')d.checked[k]=o.checked[k];
   return d;
@@ -524,7 +530,13 @@ function sanitizeData(o){
 function initState(){
   ACCTS=safeGet('sg-accounts',[]);
   if(!Array.isArray(ACCTS))ACCTS=[];
-  ACCTS=ACCTS.filter(a=>a&&typeof a==='object'&&a.id).map(a=>({id:String(a.id).slice(0,40),nom:typeof a.nom==='string'?a.nom.slice(0,40):'Compte'}));
+  ACCTS=ACCTS.filter(a=>a&&typeof a==='object'&&a.id).map(a=>({id:String(a.id).slice(0,40).replace(/[<>"`]/g,''),nom:typeof a.nom==='string'?a.nom.slice(0,40).replace(/[<>"`]/g,''):'Compte'}));
+  // suppression définitive de l'ancien compte démo
+  if(ACCTS.some(a=>a.id==='demo')){
+    ACCTS=ACCTS.filter(a=>a.id!=='demo');
+    try{localStorage.removeItem('el-v1:demo')}catch{}
+    safeSet('sg-accounts',ACCTS);
+  }
   // v4 : on ne supprime QUE les comptes de l'ancienne app, pas les comptes valides
   const oldIds=ACCTS.filter(a=>{const o=safeGet('el-v1:'+a.id,null);return o&&o.v!==4}).map(a=>a.id);
   oldIds.forEach(id=>localStorage.removeItem('el-v1:'+id));
@@ -532,6 +544,7 @@ function initState(){
   CUR=safeRaw('sg-current');
   if(CUR&&!ACCTS.find(a=>a.id===CUR))CUR=null;
   if(!CUR&&ACCTS.length)CUR=ACCTS[0].id;
+  if(CUR)try{localStorage.setItem('sg-current',CUR)}catch{}
   if(CUR){
     D=sanitizeData(safeGet('el-v1:'+CUR,null));
     if(!D){D=blank();safeSet('el-v1:'+CUR,D)}
@@ -550,6 +563,8 @@ function migrate(){
   for(const k in b.rythme)if(D.profile.rythme[k]===undefined)D.profile.rythme[k]=b.profile.rythme[k];
   if(!D.settings||typeof D.settings!=='object')D.settings=b.settings;
   for(const k in b.settings)if(D.settings[k]===undefined)D.settings[k]=b.settings[k];
+  if(!D.settings.pal||typeof D.settings.pal!=='object')D.settings.pal=b.settings.pal;
+  for(const m of ['dark','light'])if(!D.settings.pal[m])D.settings.pal[m]=b.settings.pal[m];
   if(!D.cosmetics||typeof D.cosmetics!=='object')D.cosmetics=b.cosmetics;
   if(!Array.isArray(D.cosmetics.owned))D.cosmetics.owned=[];
   D.cosmetics.equipped={...b.cosmetics.equipped,...(D.cosmetics.equipped||{})};
@@ -579,8 +594,9 @@ function themeColor(raw,dark){
 function applyTheme(){
   const dark=(D?.settings.theme||'dark')==='dark';
   const r=document.documentElement;
-  const a=themeColor(D?.settings.accent||'#ccff00',dark);
-  const bg=D?.settings.bg||(dark?'#0a0a0c':'#f4f5f2');
+  const modePal=D?.settings?.pal?.[dark?'dark':'light']||{};
+  const a=themeColor(modePal.ac||(dark?'#e63946':'#a51e2c'),dark);
+  const bg=modePal.bg||(dark?'#0a0a0c':'#fbf7ef');
   const lumBg=luminance(bg);
   const tx=lumBg<.18?'#f4f4f6':'#14160f';
   r.dataset.theme=D?.settings.theme||'dark';
@@ -684,7 +700,8 @@ function header(){
   return `<header class="top"><div class="topin">
     <div class="row" style="gap:8px"><div class="logo">Élan<span>⚡</span></div><span class="gempill">💎 ${D.gems||0}</span></div>
     <div class="topbtns">
-      <button class="icobtn" data-act="theme" title="Changer de thème">${th}</button>
+      <button class="icobtn" id="btn-colors" data-act="colors" title="Couleurs" aria-label="Choisir les couleurs">🎨</button>
+      <button class="icobtn" data-act="theme" title="Changer de thème" aria-label="Changer de thème">${th}</button>
       <button class="icobtn" data-act="more" title="Menu">☰</button>
       <button class="icobtn" data-act="compte" title="Compte" style="padding:0;overflow:visible">${avatarHTML()}</button>
     </div>
@@ -710,7 +727,7 @@ function enhanceA11y(){
 let _shellKey='';
 function render(){
   const fn=VIEWS[VIEW]||VIEWS.today,y=window.scrollY;
-  const key=[D?.gems,D?.profile?.photo,equipped('banner'),equipped('frame'),D?.settings?.theme,D?.settings?.bg,D?.settings?.accent,VIEW,ACCTS.length,D?.profile?.prenom].join('|');
+  const key=[D?.gems,D?.profile?.photo,equipped('banner'),equipped('frame'),D?.settings?.theme,JSON.stringify(D?.settings?.pal),VIEW,ACCTS.length,D?.profile?.prenom].join('|');
   const view=$('#view');
   if(key===_shellKey&&view){
     view.innerHTML=fn(); // actions fréquentes : on ne reconstruit que la vue
@@ -780,7 +797,7 @@ VIEWS.today=()=>{
 
   <div class="card">
     <div class="row between"><div class="sec-title" style="margin:0">🎯 Défi du jour</div><span class="pill">+1 💎</span></div>
-    <div class="row" style="margin:10px 0 12px"><div class="ic">${challenge.ic}</div><div class="grow"><b>${challenge.t}</b></div></div>
+    <div class="row" style="margin:10px 0 12px"><div class="ic">${challenge.ic}</div><div class="grow"><b>${challenge.t}</b>${challenge.d?`<div class="tiny muted" style="margin-top:3px">${esc(challenge.d)}</div>`:''}</div></div>
     <button class="btn ${validated?'':'pri'} block" data-act="valid-defi">${validated?'✓ Validé — défi suivant':'✓ Valider le défi'}</button>
   </div>
 
@@ -816,10 +833,13 @@ function activityRow(a){
     <button class="btn sm gh" data-act="del-act" data-id="${a.id}" title="Supprimer">🗑</button>
   </div>`;
 }
-function challengeOfDay(){
-  const d=ymd();const seed=[...d].reduce((s,c)=>s+c.charCodeAt(0),0);
-  return DEFIS[seed%DEFIS.length];
+const CH_STRIDE=(()=>{const gcd=(a,b)=>b?gcd(b,a%b):a;let s=DEFIS.length-1;while(s>1&&gcd(s,DEFIS.length)!==1)s--;return s})();
+function challengeIndex(date){
+  const [y,m,d]=date.split('-').map(Number);
+  const day=Math.floor(Date.UTC(y,m-1,d)/86400000);
+  return ((day*CH_STRIDE+5)%DEFIS.length+DEFIS.length)%DEFIS.length;
 }
+function challengeOfDay(){return DEFIS[challengeIndex(ymd())]}
 
 /* ---------- Musculation ---------- */
 VIEWS.muscu=()=>{
@@ -1087,14 +1107,14 @@ VIEWS.nutrition=()=>{
 /* ---------- Défis ---------- */
 VIEWS.defis=()=>{
   const d=ymd(),ch=challengeOfDay(),val=D.challenges[d]||[];
-  return `<h1 class="page">Défis 🎯</h1><p class="sub">Un petit objectif par jour, cumulable avec ta streak.</p>
+  return `<h1 class="page">Défis 🎯</h1><p class="sub">Un petit objectif par jour, cumulable avec ta streak. ${DEFIS.length} défis variés, tous faisables <b>sans équipement</b> — juste ton poids de corps.</p>
   <div class="card">
     <div class="row between"><div class="sec-title" style="margin:0">Défi du jour</div><span class="pill">${fmtDate(d,{day:'numeric',month:'long'})}</span></div>
-    <div class="row" style="margin:12px 0"><div class="ic">${ch.ic}</div><div class="grow"><b>${ch.t}</b></div></div>
+    <div class="row" style="margin:12px 0"><div class="ic">${ch.ic}</div><div class="grow"><b>${ch.t}</b>${ch.d?`<div class="tiny muted" style="margin-top:3px">${esc(ch.d)}</div>`:''}</div></div>
     <button class="btn ${val.includes(ch.id)?'':'pri'} block" data-act="valid-defi">${val.includes(ch.id)?'✓ Validé':'✓ Valider (+1 💎)'}</button>
   </div>
   <div class="sec-title">Tous les défis</div>
-  <div class="card">${DEFIS.map(x=>`<div class="row" style="padding:7px 0;border-bottom:1px solid var(--line)"><div class="ic" style="width:34px;height:34px;font-size:16px">${x.ic}</div><div class="grow small">${x.t}</div></div>`).join('')}</div>
+  <div class="card">${DEFIS.map(x=>`<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><div class="ic" style="width:34px;height:34px;font-size:16px">${x.ic}</div><div class="grow"><span class="small">${x.t}</span>${x.d?`<div class="tiny muted" style="margin-top:2px">${esc(x.d)}</div>`:''}</div></div>`).join('')}</div>
   <div class="card center"><div class="big mono ac">${Object.values(D.challenges).reduce((s,a)=>s+(Array.isArray(a)?a.length:0),0)}</div><div class="small muted">défis validés au total</div></div>`;
 };
 
@@ -1207,10 +1227,7 @@ VIEWS.shop=()=>{
 
 /* ---------- Profil ---------- */
 VIEWS.profil=()=>{
-  const p=D.profile,s=D.settings;
-  const sw=['#ccff00','#00e5ff','#ff5c8a','#ff8a00','#a78bfa','#34d399','#f3c969','#60a5fa'];
-  const bgSw=s.theme==='light'?['#f4f5f2','#eef2f7','#f7f0e8','#f2eef7','#eef7f1','#ffffff','#f5f3ee','#e8f0f5']:['#0a0a0c','#101820','#12101a','#0c1512','#1a1410','#141414','#0d1117','#15101a'];
-  const duos=[['#0a0a0c','#ccff00'],['#101820','#00e5ff'],['#12101a','#ff5c8a'],['#0c1512','#34d399'],['#1a1410','#f3c969'],['#15101a','#a78bfa']];
+  const p=D.profile;
   return `<h1 class="page">Profil 👤</h1><p class="sub">Ton identité, tes objectifs, ton apparence.</p>
   <div class="card">
     <div class="row">${avatarHTML('lg')}<div class="grow"><b style="font-size:19px">${esc(p.prenom||'Toi')}</b>${titleHTML()}
@@ -1250,19 +1267,9 @@ VIEWS.profil=()=>{
     <div class="row between small"><span>🏋️ Muscu</span><span class="rank">${rankOf('muscu').name} · ${rankOf('muscu').n} badges</span></div>
     <div class="row between small" style="margin-top:6px"><span>🏃 Cardio</span><span class="rank">${rankOf('cardio').name} · ${rankOf('cardio').n} badges</span></div>
   </div>
-  <div class="card"><b class="small">🎨 Apparence</b>
-    <label class="f">Thème</label><div class="seg">${['dark','light'].map(t=>`<button class="${s.theme===t?'on':''}" data-act="settheme" data-v="${t}">${t==='dark'?'🌙 Sombre':'☀️ Clair'}</button>`).join('')}</div>
-    <div class="row" style="margin-top:12px;gap:8px">
-      <div class="grow" style="background:var(--bg);color:var(--tx);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-weight:900">Primaire · fond</div>
-      <div class="grow" style="background:var(--ac);color:var(--ac-tx);border-radius:12px;padding:10px;text-align:center;font-weight:900">Secondaire · boutons</div>
-    </div>
-    <label class="f">Couleur primaire — fond de l'app</label>
-    <div class="swatches">${bgSw.map(c=>`<button class="sw ${s.bg===c?'on':''}" style="background:${c};border-color:var(--line2)" data-act="bg" data-v="${c}" aria-label="Fond ${c}"></button>`).join('')}</div>
-    <input type="color" class="f" style="padding:4px;height:46px;margin-top:8px" value="${s.bg}" data-act="bg-custom" aria-label="Fond libre">
-    <label class="f">Couleur secondaire — boutons & actions</label>
-    <div class="swatches">${sw.map(c=>`<button class="sw ${s.accent===c?'on':''}" style="background:${c}" data-act="accent" data-v="${c}" aria-label="Boutons ${c}"></button>`).join('')}</div>
-    <input type="color" class="f" style="padding:4px;height:46px;margin-top:8px" value="${s.accent}" data-act="accent-custom" aria-label="Boutons libres">
-    <label class="f">Duos fond + boutons</label><div class="row wrap">${duos.map(([a,b])=>`<button class="pill" data-act="duo" data-a="${a}" data-b="${b}" aria-label="Duo ${a} ${b}"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${a};border:1px solid var(--line2)"></span><span style="color:${b}">■ boutons</span></button>`).join('')}</div>
+  <div class="card"><b class="small">🎨 Couleurs</b>
+    <p class="tiny muted" style="margin-top:6px">Deux couleurs seulement : le fond et les boutons. Les détails dorés suivent automatiquement.</p>
+    <button class="btn pri block" id="btn-colors-profil" style="margin-top:10px" data-act="colors">🎨 Ouvrir les couleurs</button>
   </div>
   <div class="card"><b class="small">💾 Données</b>
     <div class="row" style="margin-top:10px;gap:8px"><button class="btn grow" data-act="export">⬇️ Exporter JSON</button><button class="btn grow" data-act="import">⬆️ Importer</button></div>
@@ -1278,11 +1285,39 @@ function moreSheet(){
   openSheet('Menu',`<div class="row between" style="margin-bottom:10px"><span class="small muted">Ton solde</span><span class="gempill">💎 ${D.gems||0}</span></div>
     <div class="grid2">${extra.map(([id,ic,l])=>`<button class="card" style="margin:0;text-align:left" ${id==='compte'?'data-act="compte"':`data-go="${id}"`}><div style="font-size:26px">${ic}</div><b>${l}</b></button>`).join('')}</div>`);
 }
+function colorsSheet(){
+  const sh=$('#sheet'),ret=sh?.classList.contains('open')?sh.dataset.return:null;
+  const dark=D.settings.theme==='dark',p=D.settings.pal[dark?'dark':'light'];
+  const themes=THEMES.map((t,i)=>{
+    const c=t[dark?'d':'l'],on=p.bg===c.bg&&p.ac===c.ac;
+    return `<button class="pill ${on?'ac':''}" data-act="theme-preset" data-i="${i}" aria-pressed="${on}" aria-label="Thème ${esc(t.n)}"><span style="display:inline-block;width:12px;height:12px;border-radius:4px;background:${c.bg};border:1px solid var(--line2)"></span><span style="color:${themeColor(c.ac,dark).c}">■ ${esc(t.n)}</span></button>`;
+  }).join('');
+  const acText=themeColor(p.ac,dark).c;
+  openSheet('Couleurs',`<p class="small muted">Deux couleurs seulement : le fond et les boutons. Les détails dorés s’adaptent tout seuls. Réglages séparés pour le mode ${dark?'sombre':'clair'}.</p>
+    <div class="row between" style="margin:12px 0 8px"><b class="small">Mode ${dark?'🌙 sombre':'☀️ clair'}</b><button class="btn sm gh" data-act="theme">Basculer</button></div>
+    <div class="row" style="margin-bottom:14px;gap:8px">
+      <div class="grow" id="prev-bg" style="background:${p.bg};color:${luminance(p.bg)<.18?'#fff':'#000'};border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-weight:900">Fond</div>
+      <div class="grow" id="prev-ac" style="background:${acText};color:${luminance(acText)<.18?'#fff':'#000'};border-radius:12px;padding:10px;text-align:center;font-weight:900">Boutons</div>
+    </div>
+    <label class="f">Thèmes</label><div class="row wrap">${themes}</div>
+    <label class="f">Fond de l’app</label>
+    <div class="row" style="gap:8px"><input type="color" id="col-bg" class="f" value="${p.bg}" data-act="bg-custom" aria-label="Fond libre"><button class="btn sm" data-act="pick-bg" aria-label="Ouvrir le sélecteur de fond">🎨</button></div>
+    <label class="f">Boutons et actions</label>
+    <div class="row" style="gap:8px"><input type="color" id="col-ac" class="f" value="${p.ac}" data-act="accent-custom" aria-label="Couleur des boutons libre"><button class="btn sm" data-act="pick-ac" aria-label="Ouvrir le sélecteur de boutons">🎨</button></div>
+    <p class="tiny muted" style="margin-top:10px">Les couleurs sont sauvegardées automatiquement, séparément pour chaque mode.</p>`);
+  if(ret)$('#sheet').dataset.return=ret;
+}
+function setPal(k,v){
+  if(!/^#[0-9a-f]{6}$/i.test(v))return;
+  const mode=D.settings.theme==='dark'?'dark':'light';
+  D.settings.pal[mode][k]=v;applyTheme();save();
+  const pre=$('#prev-'+k),c=k==='ac'?themeColor(v,mode==='dark').c:v;
+  if(pre){pre.style.background=c;pre.style.color=luminance(c)<.18?'#fff':'#000'}
+}
 function accountSheet(){
   openSheet('Comptes',`<div>${ACCTS.map(a=>`<div class="list-row"><div class="ic">👤</div><div class="grow"><b>${esc(a.nom)}</b>${a.id===CUR?'<div class="tiny ac">actif</div>':''}</div>
-    <button class="btn sm" data-act="useacct" data-id="${a.id}">${a.id===CUR?'Actif':'Ouvrir'}</button>
-    ${ACCTS.length>1?`<button class="btn sm gh" data-act="delacct" data-id="${a.id}">🗑</button>`:''}</div>`).join('')}</div>
-    <button class="btn block" style="margin-top:12px" data-act="demoacct">🎮 Compte démo — tout débloqué</button>
+    <button class="btn sm" data-act="useacct" data-id="${esc(a.id)}">${a.id===CUR?'Actif':'Ouvrir'}</button>
+    ${ACCTS.length>1?`<button class="btn sm gh" data-act="delacct" data-id="${esc(a.id)}">🗑</button>`:''}</div>`).join('')}</div>
     <button class="btn pri block" style="margin-top:8px" data-act="newacct">＋ Nouveau compte</button>`);
 }
 function onboarding(){
@@ -1330,8 +1365,7 @@ document.addEventListener('click',e=>{
   const act=a.dataset.act,id=a.dataset.id,v=a.dataset.v;
   switch(act){
     case 'close':closeSheet();break;
-    case 'theme':D.settings.theme=D.settings.theme==='dark'?'light':'dark';commit();break;
-    case 'settheme':D.settings.theme=v;commit();break;
+    case 'theme':D.settings.theme=D.settings.theme==='dark'?'light':'dark';commit();if($('#sheet')?.classList.contains('open'))colorsSheet();break;
     case 'more':moreSheet();break;
     case 'compte':accountSheet();break;
     case 'buy':{
@@ -1352,9 +1386,13 @@ document.addEventListener('click',e=>{
     case 'unequip':{
       D.cosmetics.equipped[a.dataset.cat]='';commit();toast('Cosmétique retiré');break;
     }
-    case 'accent':D.settings.accent=v;commit();break;
-    case 'bg':D.settings.bg=v;commit();break;
-    case 'duo':D.settings.bg=a.dataset.a;D.settings.accent=a.dataset.b;commit();toast('Duo appliqué');break;
+    case 'colors':colorsSheet();break;
+    case 'theme-preset':{
+      const t=THEMES[+a.dataset.i];if(!t)break;
+      D.settings.pal={dark:{...t.d},light:{...t.l}};commit();colorsSheet();toast(`Thème ${t.n} appliqué`);break;
+    }
+    case 'pick-bg':$('#col-bg')?.click();break;
+    case 'pick-ac':$('#col-ac')?.click();break;
     case 'rest':{
       const t=ymd(),i=D.streak.rest.indexOf(t);
       if(i>=0)D.streak.rest.splice(i,1);else D.streak.rest.push(t);
@@ -1505,19 +1543,6 @@ document.addEventListener('click',e=>{
       Object.assign(D.profile,{prenom:val('#ob-prenom').trim().slice(0,40),sexe:val('#ob-sexe')==='femme'?'femme':'homme',age:clamp(+val('#ob-age')||28,10,120),taille:clamp(+val('#ob-taille')||175,100,230),poids:clamp(+val('#ob-poids')||75,20,400),objectif:val('#ob-objectif').trim().slice(0,80)||'Progresser',rythme:{muscu:clamp(+val('#ob-rm')||3,0,14),cardio:clamp(+val('#ob-rc')||2,0,14)}});
       D.created=ymd();save();navigate('today');toast('Bienvenue dans Élan ⚡');break;
     }
-    case 'demoacct':{
-      if(D&&CUR&&CUR!=='demo')save(); // on ne perd pas le compte en cours
-      const exists=ACCTS.some(a=>a.id==='demo');
-      if(!exists){
-        ACCTS.push({id:'demo',nom:'🎮 Démo (tout débloqué)'});
-        safeSet('sg-accounts',ACCTS);
-      }
-      CUR='demo';try{localStorage.setItem('sg-current',CUR)}catch{}
-      D=exists?sanitizeData(safeGet('el-v1:demo',null))||demoData():demoData();
-      migrate();syncBadges();save();
-      EDIT={};SUB={};closeSheet();navigate('today');
-      toast(exists?'Compte démo rouvert':'Compte démo créé — tout est débloqué 🎮');break;
-    }
     case 'newacct':openSheet('Nouveau compte',`<label class="f">Nom du compte</label><input class="f" id="na-nom" placeholder="Ex : Moi, Sport…">
       <button class="btn pri block" style="margin-top:12px" data-act="saveAcct">Créer</button>`);break;
     case 'saveAcct':{
@@ -1557,8 +1582,8 @@ document.addEventListener('input',e=>{
   if(e.target.id==='c-duree')EDIT.cDuree=e.target.value;
   if(e.target.id==='c-dist')EDIT.cDist=e.target.value;
   if(e.target.id==='c-note')EDIT.cNote=e.target.value;
-  if(e.target.dataset?.act==='accent-custom'){D.settings.accent=e.target.value;applyTheme();save()}
-  if(e.target.dataset?.act==='bg-custom'){D.settings.bg=e.target.value;applyTheme();save()}
+  if(e.target.dataset?.act==='bg-custom')setPal('bg',e.target.value);
+  if(e.target.dataset?.act==='accent-custom')setPal('ac',e.target.value);
 });
 document.addEventListener('change',e=>{
   if(e.target.id==='photo-file'){

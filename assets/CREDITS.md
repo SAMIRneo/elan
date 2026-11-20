@@ -15,8 +15,6 @@ Photos importées depuis **Pexels** (https://www.pexels.com/license/) — licenc
 | cos-frame-volt.jpg | https://www.pexels.com/photo/9404662/ |
 | cos-banner-stade.jpg | https://www.pexels.com/photo/4135333/ |
 | cos-banner-temple.jpg | https://www.pexels.com/photo/37844112/ (temple grec au coucher de soleil) |
-| cos-avatar-1.jpg | https://www.pexels.com/photo/8874857/ |
-| cos-avatar-2.jpg | https://www.pexels.com/photo/17210052/ |
-| cos-avatar-3.jpg | https://www.pexels.com/photo/221241/ |
 | laurel-gold.svg | Couronne de laurier dessinée localement (dégradé or) |
+| frame-gold-ring.svg, frame-volt-ring.svg, title-plaque-gold.svg, title-plaque-ice.svg, title-plaque-olympe.svg | Visuels SVG dessinés localement (dégradés métalliques / néon), dans le même style que `laurel-gold.svg` |
 | cos-banner-neon.jpg | https://www.pexels.com/photo/16971320/ |

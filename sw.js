@@ -1,11 +1,13 @@
-const CACHE="elan-v43";
+const CACHE="elan-v54";
 const CRITICAL=["./","./index.html","./manifest.webmanifest","./icon.svg","./icon-192.png","./icon-512.png"];
 const OPTIONAL=[
   "./assets/cos-flame-gold.jpg","./assets/cos-flame-ice.jpg","./assets/cos-flame-rainbow.jpg",
   "./assets/cos-title-pr.jpg","./assets/cos-title-streak.jpg","./assets/cos-title-olympe.jpg",
   "./assets/cos-frame-gold.jpg","./assets/cos-frame-laurel.jpg","./assets/cos-frame-volt.jpg",
   "./assets/cos-banner-stade.jpg","./assets/cos-banner-temple.jpg","./assets/cos-banner-neon.jpg",
-  "./assets/cos-avatar-1.jpg","./assets/cos-avatar-2.jpg","./assets/cos-avatar-3.jpg","./assets/laurel-gold.svg"
+  "./assets/laurel-gold.svg",
+  "./assets/frame-gold-ring.svg","./assets/frame-volt-ring.svg",
+  "./assets/title-plaque-gold.svg","./assets/title-plaque-ice.svg","./assets/title-plaque-olympe.svg"
 ];
 self.addEventListener("install",e=>{
   e.waitUntil((async()=>{

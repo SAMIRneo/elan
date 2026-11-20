@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+ <defs>
+  <linearGradient id="or" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#fff7d6"/>
+   <stop offset=".16" stop-color="#e9c268"/>
+   <stop offset=".34" stop-color="#8c5a0d"/>
+   <stop offset=".5" stop-color="#fff0ae"/>
+   <stop offset=".68" stop-color="#c6922a"/>
+   <stop offset=".85" stop-color="#7a5109"/>
+   <stop offset="1" stop-color="#f3c969"/>
+  </linearGradient>
+  <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+   <stop offset="0" stop-color="#fffdf0"/>
+   <stop offset=".5" stop-color="#d4a23c"/>
+   <stop offset="1" stop-color="#5d3d06"/>
+  </linearGradient>
+  <filter id="om" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.4"/></filter>
+ </defs>
+ <circle cx="50" cy="50" r="40" fill="none" stroke="#2c1c02" stroke-width="10" opacity=".45" filter="url(#om)"/>
+ <circle cx="50" cy="50" r="40" fill="none" stroke="url(#or)" stroke-width="8"/>
+ <circle cx="50" cy="50" r="44.6" fill="none" stroke="url(#rim)" stroke-width="1.3" opacity=".9"/>
+ <circle cx="50" cy="50" r="35.4" fill="none" stroke="#5c3c06" stroke-width="1.6" opacity=".85"/>
+ <path d="M18 30Q50 6 82 30" fill="none" stroke="#fffbe8" stroke-width="2.2" stroke-linecap="round" opacity=".8"/>
+ <path d="M20 72Q50 94 80 72" fill="none" stroke="#6d4708" stroke-width="1.8" stroke-linecap="round" opacity=".65"/>
+ <g fill="#fffbe0"><circle cx="27" cy="25" r="2.4"/><circle cx="74" cy="74" r="1.7"/></g>
+ <g fill="none" stroke="#fffdf0" stroke-width="1.2" opacity=".85">
+  <path d="M27 22v6M24 25h6M74 71v6M71 74h6"/>
+ </g>
+</svg>
