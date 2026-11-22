@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+ <defs>
+  <linearGradient id="vl" x1="0" y1="0" x2="1" y2="1">
+   <stop offset="0" stop-color="#f4ffc4"/>
+   <stop offset=".25" stop-color="#ccff00"/>
+   <stop offset=".5" stop-color="#4c7a00"/>
+   <stop offset=".7" stop-color="#e6ff70"/>
+   <stop offset="1" stop-color="#6fa000"/>
+  </linearGradient>
+  <filter id="gl" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.4"/></filter>
+ </defs>
+ <circle cx="50" cy="50" r="40" fill="none" stroke="#ccff00" stroke-width="12" opacity=".5" filter="url(#gl)"/>
+ <circle cx="50" cy="50" r="40" fill="none" stroke="url(#vl)" stroke-width="7"/>
+ <circle cx="50" cy="50" r="44.4" fill="none" stroke="#f6ffc8" stroke-width="1.3" opacity=".9"/>
+ <circle cx="50" cy="50" r="35.6" fill="none" stroke="#315200" stroke-width="1.4" opacity=".8"/>
+ <g fill="none" stroke="#ecff9e" stroke-width="2.1" stroke-linejoin="round" opacity=".95">
+  <path d="M20 34l6-10-1 8 7-11"/>
+  <path d="M80 66l-6 10 1-8-7 11"/>
+  <path d="M66 17l-9 6 6 1-10 7"/>
+  <path d="M34 83l9-6-6-1 10-7"/>
+ </g>
+ <g fill="#fff"><circle cx="27" cy="24" r="1.8"/><circle cx="73" cy="76" r="1.4"/></g>
+</svg>

@@ -1,0 +1,6 @@
+# Outils de développement (à ne pas publier)
+.opencode/
+PACK-README.md
+*.zip
+Thumbs.db
+.superpowers/
