@@ -1,6 +1,6 @@
 # Élan ⚡ — muscu • cardio • streak
 
-**🌐 En ligne** : https://samirneo.github.io/elan/ (GitHub Pages, dépôt `SAMIRneo/elan`, branche `master`, racine). Le fichier `elan.html` est une copie de `index.html` ; `index.html` reste la page servie par GitHub Pages.
+**🌐 En ligne** : https://samirneo.github.io/elan/ (GitHub Pages, dépôt `SAMIRneo/elan`, branche `master`, dossier `/elan`). Tout le projet est rangé dans ce dossier ; `index.html` est la page servie et `elan.html` en est une copie.
 
 Version 4 — **reconstruite de zéro**. La v3 multi-sport était trop éparpillée : on resserre tout autour de trois piliers — **musculation, cardio, streak** — en gardant ce qui servait vraiment (progression, poids/IMC, exos, défis, nutrition, cycle, Panthéon) et en supprimant les sports variés (padel, escalade, natation, volley…), remplacés par un **onglet Cardio complet** (course, vélo, corde, rameur, HIIT, marche).
 
