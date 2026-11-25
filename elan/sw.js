@@ -1,4 +1,4 @@
-const CACHE="elan-v54";
+const CACHE="elan-v55";
 const CRITICAL=["./","./index.html","./manifest.webmanifest","./icon.svg","./icon-192.png","./icon-512.png"];
 const OPTIONAL=[
   "./assets/cos-flame-gold.jpg","./assets/cos-flame-ice.jpg","./assets/cos-flame-rainbow.jpg",
@@ -36,9 +36,10 @@ self.addEventListener("fetch",e=>{
     e.respondWith(fetch(req,{cache:"no-store"}).then(async res=>{
       if(!res.ok)throw new Error("offline");
       const copy=res.clone(),c=await caches.open(CACHE);
-      await c.put("./index.html",copy);
+      const key=url.pathname.endsWith("/elan.html")?"./elan.html":"./index.html";
+      await c.put(key,copy);
       return res;
-    }).catch(()=>caches.match("./index.html")));
+    }).catch(async()=>await caches.match("./elan.html")||await caches.match("./index.html")));
     return;
   }
   // assets : cache immédiat + revalidation silencieuse en tâche de fond
