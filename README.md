@@ -9,13 +9,13 @@ Version 4 — **reconstruite de zéro**. La v3 multi-sport était trop éparpill
 ## Les 3 piliers
 
 - 🔥 **Streak** — 1 séance (muscu ou cardio) valide le jour. Le bouton 😴 « Jour de repos » protège la série. Bandeau des 7 derniers jours, record personnel.
-- 🏋️ **Musculation** — liste d'exercices avec **kg / répétitions / séries**, programmes guidés **Push / Pull / Legs / Full body** (fixes mais modifiables), séance libre, ajout d'exos à la volée, note et avis ⭐. Chaque charge est enregistrée automatiquement dans Progrès, avec détection des records.
+- 🏋️ **Musculation** — bibliothèque complète de salle (pectoraux, dos, épaules, biceps, triceps, jambes, abdominaux, cardio), par groupe musculaire, avec recherche. Un exercice de séance contient **plusieurs séries**, chacune avec son poids (décimales françaises acceptées, ex. 22,5) et ses répétitions ; bouton « ＋ Ajouter une série » pré-rempli avec la série précédente, chaque série modifiable/supprimable. Programmes guidés **Push / Pull / Legs / Full body** (fixes mais modifiables), séance libre, ajout d'exos à la volée, note et avis ⭐. Chaque série alimente Progrès (volume = Σ poids × reps, poids max, meilleure série, nombre de séries), l'historique (« 10 × 45 kg · 10 × 55 kg »), les records, les badges et la streak.
 - 🏃 **Cardio** — onglet complet : course, vélo, corde, rameur, HIIT/Tabata, marche rapide. Durée, distance (ou nombre de tours), note, avis, historique et records par mode.
 
 ## Écrans secondaires
 
 - 📈 **Progrès** — heatmap 16 semaines, minutes sur 7 jours, répartition muscu/cardio, pesée + courbe de poids + IMC, exploration de toutes les mesures par sport → exo → mesure avec courbe.
-- 📋 **Exercices** (plus dans le menu ☰ — accessible depuis **Muscu → Programmes → Catalogue d'exercices**) — catalogue coché (échauffement / exercices / étirements), bouton **📊 Mesurer** (kg, reps, séries, temps, distance, vitesse) qui enregistre la mesure **et** compte comme séance, exos personnalisés (CRUD).
+- 📋 **Exercices** (menu ☰ ou **Muscu → Programmes → Catalogue**) — catalogue coché (échauffement / exercices / cardio / étirements / perso) avec **recherche** et **filtre par groupe musculaire**, bouton **📊 Mesurer** (kg, reps, séries, temps, distance, vitesse) qui enregistre la mesure **et** compte comme séance, exos personnalisés (nom + groupe, sauvegardés en localStorage, sans doublon).
 - 🍽️ **Nutrition** — Mifflin-St Jeor (+ variantes sèche/prise), 3 modes de saisie (assiettes, plats pesés, direct), compteur d'eau.
 - 🎯 **Défis** — **24 défis variés** (pompes, planche, HIIT, burpees, jumping jacks, marche rapide, nage en sec…), **tous réalisables sans équipement**, au poids du corps. Chaque défi a une **explication courte** affichée sur l’écran Défis et sur l’écran Jour (ex. « HIIT : 30 s d’effort intense puis 30 s de repos, à répéter »). Rotation déterministe par date sur un cycle complet de 24 jours (aucun défi répété avant 24 jours). Validation manuelle, **+1 💎 par défi** (une seule fois par défi, pas de ferme).
 - 🛍️ **Boutique** (menu ☰) — cosmétiques achetés avec les gems, **aucun avantage sportif** : styles de flamme de streak, titres à côté du prénom, cadres de profil, bannières de profil (12 objets, 8–18 💎). Acheter équipe automatiquement ; chaque catégorie peut être retirée. **Vrais effets visuels** : flamme photo qui vacille avec étincelles montantes, cadres en anneaux SVG à reflets métalliques qui pulsent, titre gravé avec balayage lumineux, bannière animée (haze/dégradé mobile, pulsation néon), et bursts de particules 💎/✨/🌿/⚡ à la validation d'un défi, à l'achat et à l'enregistrement d'une séance. `prefers-reduced-motion` désactive les animations.
@@ -29,7 +29,7 @@ L'avatar par défaut est une **silhouette vectorielle** (plus d'emoji 👤). Les
 
 **Couleurs — système simplifié** : **2 couleurs seulement** — le fond (`--bg`) et les boutons/actions (`--ac`). Tout le reste (cartes, bordures, textes, contours) est dérivé automatiquement, avec des détails dorés. Le bouton 🎨 de l’en-tête ouvre une modale avec **6 thèmes prédéfinis** (Rouge & or par défaut, Marbre & or, Nuit étoilée, Pourpre royal, Émeraude, Acier) et **2 sélecteurs libres** (fond, boutons). Les couleurs sont **enregistrées séparément pour le mode sombre et le mode clair** ; le bouton « Basculer » de la modale permet de régler l’autre mode sans quitter la modale. Anciens réglages (swatches, duos, contour) supprimés ; les anciennes données sont migrées automatiquement vers le nouveau format `settings.pal`.
 
-**Surcharge** : dans la séance muscu, chaque exo ayant un historique affiche « Dernière fois : … » et un bouton **⚡ Surcharge** qui ouvre une saisie **manuelle** (kg / répétitions / séries) pré-remplie avec tes valeurs en cours — c'est toi qui indiques ce que tu as réellement fait.
+**Surcharge** : dans la séance muscu, chaque exo ayant un historique affiche « Dernière fois : … » et un bouton **⚡ Surcharge** qui ouvre une saisie **manuelle** (kg / répétitions) pré-remplie avec ta dernière série — elle **ajoute une nouvelle série** à l'exercice ; c'est toi qui indiques ce que tu as réellement fait.
 
 Les animations CSS (flamme, cadres, titres, sweeps) restent appliquées par-dessus. Navigation basse sur 5 entrées (Jour / Muscu / ＋ / Cardio / Progrès) ; le menu ☰ donne accès aux écrans secondaires.
 
@@ -41,9 +41,9 @@ Dark-first : fond `#0a0a0c`, cartes `#16161a`, **lime électrique `#ccff00`** r�
 
 1. Tout dans `index.html` — pas de fichiers CSS/JS séparés, zéro dépendance
 2. Zéro backend, données en localStorage (`el-v1:<compte>`), comptes dans `sg-accounts`
-3. Version de données `v:4` — toute structure plus ancienne déclenche une remise à zéro
+3. Version de données `v:5` (actuelle) — `v:4` est **migrée automatiquement une seule fois** (un ancien exo « 1 poids / 1 reps » devient 1 série) et une copie de l'ancien format est conservée dans `el-v4-backup:<compte>` avant conversion ; toute structure plus ancienne déclenche une remise à zéro
 4. Toute nouvelle couleur a sa déclinaison light **et** dark dans les tokens
-5. **Incrémenter `CACHE` dans `sw.js` à chaque modification** (actuellement `elan-v54`) — la page est network-first avec `cache:"no-store"` pour éviter les 304 masquant une nouvelle version, mais retombe sur le cache si la réponse n'est pas ok
+5. **Incrémenter `CACHE` dans `sw.js` à chaque modification** (actuellement `elan-v55`) — la page est network-first avec `cache:"no-store"` pour éviter les 304 masquant une nouvelle version, mais retombe sur le cache si la réponse n'est pas ok
 6. Cibles tactiles ≥ 44 px
 7. L'onglet Cycle n'apparaît que si `profile.sexe === "femme"`
 
@@ -54,7 +54,9 @@ python -m http.server 8000
 # → http://localhost:8000
 ```
 
-Checklist : onboarding → séance muscu (kg/reps/séries + ⭐) → séance cardio (durée + distance) → streak + jour de repos → défi + humeur → mesure d'exo → poids → Progrès (heatmap, courbes) → Exos perso → Nutrition → Défis → Panthéon → Profil (thèmes, couleurs, export/import, comptes) → dark/light → reload (persistance) → offline (couper le serveur, recharger).
+Checklist : onboarding → séance muscu (plusieurs séries kg/reps + ⭐) → séance cardio (durée + distance) → streak + jour de repos → défi + humeur → mesure d'exo → poids → Progrès (volume, heatmap, courbes) → bibliothèque (recherche, filtres, exo perso) → Nutrition → Défis → Panthéon → Profil (thèmes, couleurs, export/import, comptes) → dark/light → reload (persistance) → offline (couper le serveur, recharger).
+
+**Tests navigateur (optionnels)** : `npm i --no-save playwright` puis `node tests/e2e/run.js` (Edge installé, viewport 380 × 800). Captures et rapport dans `tests/e2e/artifacts/`. Ces tests ne font pas partie de l'application servie.
 
 ## Audit (5 reviewers, nov. 2026)
 
